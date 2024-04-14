@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Edit Listing</title>
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto mt-8">
+    <h1 class="text-3xl font-bold mb-4">Edit Car</h1>
+
+    <form th:action="@{/listing/edit}" method="post" th:object="${listing}" class="max-w-md bg-white p-6 rounded-md shadow-md">
+        <input type="hidden" th:field="*{id}" />
+        <div class="mb-4">
+            <label for="name" class="block text-sm font-medium text-gray-600">Listing Name</label>
+            <input type="text" id="name" th:field="*{name}" name="name" th:value="${listing.name}" class="mt-1 p-2 w-full border rounded-md">
+        </div>
+
+        <div class="mb-4">
+            <label for="description" class="block text-sm font-medium text-gray-600">Car Color</label>
+            <input th:field="*{description}" type="text" id="description" name="description" th:value="${listing.description}" class="mt-1 p-2 w-full border rounded-md">
+        </div>
+
+        <div class="mb-4">
+            <label for="quantity" class="block text-sm font-medium text-gray-600">Car Quantity</label>
+            <input th:field="*{quantity}" type="number" id="quantity" name="quantity" th:value="${listing.quantity}" class="mt-1 p-2 w-full border rounded-md">
+        </div>
+
+        <div class="flex justify-end">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

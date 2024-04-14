@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order History</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container my-2">
+    <h2>Order To Seller</h2>
+    <a th:href="@{/order/create}" class="btn btn-primary btn-sm mb-3">Create Order</a>
+
+    <table border="1" class="table table-striped table-responsive-md">
+        <thead>
+        <tr>
+            <th scope="col">Order Id</th>
+            <th scope="col">Owner</th>
+            <th scope="col">Products</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Payment Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order: ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.authorUsername}"></td>
+            <td th:if="${order!=null}">
+                <table th:if="${order!=null}">
+                    <tr th:each="listing: ${order.listings}">
+                        <td th:text="${listing.name}"></td>
+                    </tr>
+                </table>
+            </td>
+            <td th:if="${order!=null}">
+                <table th:if="${order!=null}">
+                    <tr th:each="listing: ${order.listings}">
+                        <td th:text="${listing.quantity}"></td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <form th:action="@{/order/set-status/{id}(id=${order.id})}" method="post">
+                    <label for="status">Set Status</label>
+                    <select name="status" id="status">
+                        <option th:if="${order.status=='WAITING_FOR_PAYMENT'}" selected="selected" value="WAITING_PAYMENT">Waiting for payment</option>
+                        <option th:unless="${order.status=='WAITING_FOR_PAYMENT'}" value="WAITING_PAYMENT">Waiting for payment</option>
+                        <option th:if="${order.status=='FAILED'}" selected="selected" value="FAILED">Failed</option>
+                        <option th:unless="${order.status=='FAILED'}" value="FAILED">Failed</option>
+                        <option th:if="${order.status=='SUCCESS'}" selected="selected" value="SUCCESS">SUCCESS</option>
+                        <option th:unless="${order.status=='SUCCESS'}" value="SUCCESS">SUCCESS</option>
+                        <option th:if="${order.status=='CANCELLED'}" selected="selected" value="CANCELLED">CANCELLED</option>
+                        <option th:unless="${order.status=='CANCELLED'}" value="CANCELLED">CANCELLED</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary" th:value="${status}">Submit</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+</html>
