@@ -25,13 +25,22 @@ public class ListingServiceImpl implements  ListingService{
     @Override
     public Listing create(Listing listing){
         User owner = userRepository.findByUsername(listing.getSellerUsername());
-        if(owner!=null
-                && (owner.getType().equals(UserType.SELLER.name())
-                || owner.getType().equals(UserType.BUYERSELLER.name()))){
+        if(ownerValid(owner) && fieldValid(listing)){
             listingRepository.createListing(listing);
+
             return listing;
         }
         return null;
+    }
+
+    public boolean fieldValid(Listing listing){
+        return listing.getName().length()>0 && listing.getQuantity()>0;
+    }
+
+    public boolean ownerValid(User owner){
+        return owner!=null
+                && (owner.getType().equals(UserType.SELLER.name())
+                || owner.getType().equals(UserType.BUYERSELLER.name()))
     }
 
     @Override

@@ -13,19 +13,19 @@
     <form th:action="@{/listing/create}" th:object="${listing}" method="post">
         <div class="form-group">
             <label for="nameInput">Name</label>
-            <input th:field="*{name}" type="text" class="form-control mb-4 col-4" id="nameInput" placeholder="Enter listing's name">
+            <input th:field="*{name}" type="text" class="form-control mb-4 col-4" id="nameInput" placeholder="Enter listing's name" required>
         </div>
         <div class="form-group">
-            <label for="descriptionInput">Color</label>
-            <input th:field="*{description}" type="text" class="form-control mb-4 col-4" id="descriptionInput" placeholder="Enter listing's description">
+            <label for="descriptionInput">Description</label>
+            <input th:field="*{description}" type="text" class="form-control mb-4 col-4" id="descriptionInput" placeholder="Enter listing's description" required>
         </div>
         <div class="form-group">
             <label for="quantityInput">Quantity</label>
-            <input th:field="*{quantity}" type="text" class="form-control mb-4 col-4" id="quantityInput" placeholder="Enter listing's quantity">
+            <input th:field="*{quantity}" type="text" class="form-control mb-4 col-4" id="quantityInput" placeholder="Enter listing's quantity" required>
         </div>
         <div class="form-group">
             <label for="sellerusername">Seller Username</label>
-            <input th:field="*{sellerUsername}" type="text" class="form-control mb-4 col-4" id="sellerusername" placeholder="Enter listing's owner">
+            <input th:field="*{sellerUsername}" type="text" class="form-control mb-4 col-4" id="sellerusername" placeholder="Enter listing's owner" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>

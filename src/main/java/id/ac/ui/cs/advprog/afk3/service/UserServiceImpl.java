@@ -16,12 +16,24 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User create(User user){
-        if(userRepository.findByUsername(user.getUsername())==null){
+        if(userRepository.findByUsername(user.getUsername())==null &&
+            fieldValid(user)){
             userRepository.createUser(user);
             return user;
         }else{
             throw new IllegalArgumentException();
         }
+    }
+
+    public boolean fieldValid(User user){
+        boolean phoneIsNumber = true;
+        for (Character c : user.getPhoneNumber().toCharArray()){
+            if(!Character.isDigit(c)){
+                phoneIsNumber=false;
+                break;
+            }
+        }
+        return !user.getAddress().isEmpty() && phoneIsNumber;
     }
 
     @Override
