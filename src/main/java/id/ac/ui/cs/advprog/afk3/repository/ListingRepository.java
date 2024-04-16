@@ -13,6 +13,10 @@ import java.util.UUID;
 public class ListingRepository {
     private final List<Listing> listingData = new ArrayList<>();
 
+    public ListingRepository(){
+        System.out.println("zczc listing repo created");
+    }
+
     @Autowired
     private ListingBuilder listingBuilder;
     public Listing createListing(Listing listing){

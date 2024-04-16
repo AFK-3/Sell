@@ -40,7 +40,7 @@ public class ListingServiceImpl implements  ListingService{
     public boolean ownerValid(User owner){
         return owner!=null
                 && (owner.getType().equals(UserType.SELLER.name())
-                || owner.getType().equals(UserType.BUYERSELLER.name()))
+                || owner.getType().equals(UserType.BUYERSELLER.name()));
     }
 
     @Override
