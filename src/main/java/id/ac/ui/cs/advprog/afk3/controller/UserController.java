@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/userSeller")
 public class UserController {
     String createHTML = "userCreate";
     String listHTML = "userList";
