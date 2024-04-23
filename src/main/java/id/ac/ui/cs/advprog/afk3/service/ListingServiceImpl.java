@@ -7,7 +7,13 @@ import id.ac.ui.cs.advprog.afk3.model.User;
 import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
 import id.ac.ui.cs.advprog.afk3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,24 +29,21 @@ public class ListingServiceImpl implements  ListingService{
     private UserRepository userRepository;
 
     @Override
-    public Listing create(Listing listing){
-        User owner = userRepository.findByUsername(listing.getSellerUsername());
-        if(ownerValid(owner) && fieldValid(listing)){
-            listingRepository.createListing(listing);
+    public Listing create(Listing listing, String token){
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
-            return listing;
+        ResponseEntity<String > owner = restTemplate.exchange("http://localhost:8080/user/get-username", HttpMethod.GET,entity ,String.class);
+        if (owner.getBody()!=null && fieldValid(listing)){
+            listingRepository.createListing(listing);
         }
         return null;
     }
 
     public boolean fieldValid(Listing listing){
         return listing.getName().length()>0 && listing.getQuantity()>0;
-    }
-
-    public boolean ownerValid(User owner){
-        return owner!=null
-                && (owner.getType().equals(UserType.SELLER.name())
-                || owner.getType().equals(UserType.BUYERSELLER.name()));
     }
 
     @Override

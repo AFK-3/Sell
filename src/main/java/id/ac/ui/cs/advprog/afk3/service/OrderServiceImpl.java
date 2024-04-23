@@ -8,9 +8,15 @@ import id.ac.ui.cs.advprog.afk3.model.User;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
 import id.ac.ui.cs.advprog.afk3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
@@ -24,11 +30,16 @@ public class OrderServiceImpl implements OrderService{
     @Autowired
     private UserRepository userRepository;
 
-    public Order createOrder(Order order){
-        User author = userRepository.findByUsername(order.getAuthorUsername());
+    public Order createOrder(Order order, String token){
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+        ResponseEntity<String> authorData = restTemplate.exchange("http://localhost:8080/user/get-role", HttpMethod.GET,entity ,String.class);
+
         if (order.getId()==null || orderRepository.findById(order.getId().toString())==null &&
-                (author.getType().equals(UserType.BUYERSELLER.name())
-                || author.getType().equals(UserType.BUYER.name())))
+                (UserType.BUYERSELLER.name().equals(authorData.getBody())
+                || UserType.BUYER.name().equals(authorData.getBody())))
         {
             Order newOrder = orderBuilder.reset().setCurrent(order).firstSetUp().build();
             orderRepository.save(newOrder);

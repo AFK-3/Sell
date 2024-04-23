@@ -26,8 +26,9 @@ public class ListingController {
     }
 
     @PostMapping("/create")
-    public String createListingPost(@ModelAttribute("product") Listing listing, Model model){
-        listingService.create(listing);
+    public String createListingPost(@ModelAttribute("product") Listing listing, @RequestHeader("Authorization") String token){
+        System.out.println("zczc"+token);
+        listingService.create(listing, token);
         return "redirect:list";
     }
 
