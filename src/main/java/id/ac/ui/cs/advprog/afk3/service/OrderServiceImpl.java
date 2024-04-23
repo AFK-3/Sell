@@ -35,7 +35,7 @@ public class OrderServiceImpl implements OrderService{
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
-        ResponseEntity<String> authorData = restTemplate.exchange("http://localhost:8080/user/get-role", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String> authorData = restTemplate.exchange("http://35.198.243.155//user/get-role", HttpMethod.GET,entity ,String.class);
 
         if (order.getId()==null || orderRepository.findById(order.getId().toString())==null &&
                 (UserType.BUYERSELLER.name().equals(authorData.getBody())

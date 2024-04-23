@@ -35,7 +35,7 @@ public class ListingServiceImpl implements  ListingService{
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
-        ResponseEntity<String > owner = restTemplate.exchange("http://localhost:8080/user/get-username", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155//user/get-username", HttpMethod.GET,entity ,String.class);
         if (owner.getBody()!=null && fieldValid(listing)){
             listingRepository.createListing(listing);
         }

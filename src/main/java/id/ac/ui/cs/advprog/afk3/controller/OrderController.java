@@ -41,7 +41,7 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public String createOrderPagePost(@ModelAttribute("form") Order order, @RequestHeader("Authantication") String token){
+    public String createOrderPagePost(@ModelAttribute("form") Order order, @RequestHeader("Authorization") String token){
         List<Listing> listings = new ArrayList<>();
         for (Listing listing : order.getListings()){
             Listing temp = listingService.findById(listing.getId().toString());
