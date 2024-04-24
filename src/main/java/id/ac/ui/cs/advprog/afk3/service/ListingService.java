@@ -8,6 +8,6 @@ public interface ListingService {
     public Listing create(Listing listing, String token);
     public List<Listing> findAll();
     Listing findById(String listingId);
-    public Listing update(String listingId, Listing listing);
-    public void deleteListingById(String listingId);
+    public Listing update(String listingId, Listing listing, String token);
+    public void deleteListingById(String listingId, String token);
 }

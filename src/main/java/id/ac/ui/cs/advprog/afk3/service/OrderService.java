@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrderService {
     Order createOrder(Order order, String token);
-    Order updateStatus(String orderId, String status);
+    Order updateStatus(String orderId, String status, String token);
     Order findById(String orderId);
     List<Order> findAllByAuthor(String username);
     List<Order> findAllWithSeller(String username);

@@ -1,10 +1,8 @@
 package id.ac.ui.cs.advprog.afk3.service;
 
 import id.ac.ui.cs.advprog.afk3.model.Builder.OrderBuilder;
-import id.ac.ui.cs.advprog.afk3.model.Enum.OrderStatus;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Order;
-import id.ac.ui.cs.advprog.afk3.model.User;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
 import id.ac.ui.cs.advprog.afk3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +33,12 @@ public class OrderServiceImpl implements OrderService{
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
-        ResponseEntity<String> authorData = restTemplate.exchange("http://35.198.243.155//user/get-role", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String> authorData = restTemplate.exchange("http://35.198.243.155/user/get-role", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
 
-        if (order.getId()==null || orderRepository.findById(order.getId().toString())==null &&
-                (UserType.BUYERSELLER.name().equals(authorData.getBody())
-                || UserType.BUYER.name().equals(authorData.getBody())))
+        if (isOrderValid(order)
+                && isUserBuyer(authorData.getBody())
+                && isAuthorAccessing(owner, order))
         {
             Order newOrder = orderBuilder.reset().setCurrent(order).firstSetUp().build();
             orderRepository.save(newOrder);
@@ -48,9 +47,17 @@ public class OrderServiceImpl implements OrderService{
         return null;
     }
     @Override
-    public Order updateStatus(String orderId, String status){
+    public Order updateStatus(String orderId, String status, String token){
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+        ResponseEntity<String> loggedin = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
+
+        String authorUsername = loggedin.getBody();
+
         Order order = findById(orderId);
-        if (order != null) {
+        if (order != null && order.getAuthorUsername().equals(authorUsername)) {
             Order newOrder = orderBuilder.setCurrent(order).addStatus(status).build();
             orderRepository.save(newOrder);
             return newOrder;
@@ -72,5 +79,18 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<Order> findAllWithSeller(String username) {
         return orderRepository.findAllWithSeller(username);
+    }
+
+    private boolean isOrderValid(Order order){
+        return order.getId()==null || orderRepository.findById(order.getId().toString())==null;
+    }
+
+    private boolean isUserBuyer(String role){
+        return UserType.BUYERSELLER.name().equals(role)
+                || UserType.BUYER.name().equals(role);
+    }
+
+    private  boolean isAuthorAccessing(ResponseEntity<String> author, Order order){
+        return author.getBody()!=null && order.getAuthorUsername().equals(author.getBody());
     }
 }

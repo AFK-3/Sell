@@ -35,15 +35,18 @@ public class ListingServiceImpl implements  ListingService{
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
-        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155//user/get-username", HttpMethod.GET,entity ,String.class);
-        if (owner.getBody()!=null && fieldValid(listing)){
+
+        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > role = restTemplate.exchange("http://35.198.243.155/user/get-role", HttpMethod.GET,entity ,String.class);
+        if (owner.getBody()!=null && fieldValid(listing) && owner.getBody().equals(listing.getSellerUsername()) &&
+        isSeller(role.getBody())){
             listingRepository.createListing(listing);
         }
         return null;
     }
 
     public boolean fieldValid(Listing listing){
-        return listing.getName().length()>0 && listing.getQuantity()>0;
+        return !listing.getName().isEmpty() && listing.getQuantity()>0;
     }
 
     @Override
@@ -60,12 +63,37 @@ public class ListingServiceImpl implements  ListingService{
     }
 
     @Override
-    public Listing update (String listingId, Listing listing){
-        return listingRepository.update(listingId, listing);
+    public Listing update (String listingId, Listing listing, String token){
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+
+        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > role = restTemplate.exchange("http://35.198.243.155/user/get-role", HttpMethod.GET,entity ,String.class);
+        if (owner.getBody()!=null && owner.getBody().equals(listing.getSellerUsername()) &&
+                isSeller(role.getBody())){
+            return listingRepository.update(listingId, listing);
+        }
+        return null;
     }
 
     @Override
-    public void deleteListingById(String listingId) {
-        listingRepository.delete(listingId);
+    public void deleteListingById(String listingId, String token) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+
+        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
+        Listing listing = listingRepository.findById(listingId);
+        if (listing != null && owner.getBody()!=null && owner.getBody().equals(listing.getSellerUsername())){
+            listingRepository.delete(listingId);
+        }
+    }
+
+    private boolean isSeller(String role){
+        return UserType.BUYERSELLER.name().equals(role) ||
+                UserType.SELLER.name().equals(role);
     }
 }

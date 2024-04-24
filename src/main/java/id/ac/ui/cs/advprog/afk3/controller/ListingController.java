@@ -50,14 +50,15 @@ public class ListingController {
     }
 
     @PostMapping("/edit")
-    public String editProductPost(@ModelAttribute("listing") Listing listing, Model model){
-        listingService.update(listing.getId().toString(), listing);
+    public String editProductPost(@ModelAttribute("listing") Listing listing, @RequestHeader("Authorization") String token){
+        System.out.println("zczc edit listing"+listing);
+        listingService.update(listing.getId().toString(), listing ,token);
         return "redirect:list";
     }
 
     @PostMapping("/delete")
-    public String deleteListing(Model model, @RequestParam("listingId") String listingId){
-        listingService.deleteListingById(listingId);
+    public String deleteListing(Model model, @RequestParam("listingId") String listingId, @RequestHeader("Authorization") String token){
+        listingService.deleteListingById(listingId,token);
         return "redirect:list";
     }
 }

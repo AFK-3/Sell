@@ -70,9 +70,9 @@ public class OrderController {
         return "orderPostToSeller";
     }
     @PostMapping("/set-status/{id}")
-    public String postSetStatusById(@PathVariable("id")String orderId, @ModelAttribute("status") String status,Model model){
+    public String postSetStatusById(@PathVariable("id")String orderId, @ModelAttribute("status") String status,@RequestHeader("Authorization") String token){
         System.out.println("/order/set-status"+orderId+" "+status);
-        orderService.updateStatus(orderId, status);
+        orderService.updateStatus(orderId, status, token);
         System.out.println(orderService.findById(orderId).getStatus());
         return "redirect:../to-seller";
     }
