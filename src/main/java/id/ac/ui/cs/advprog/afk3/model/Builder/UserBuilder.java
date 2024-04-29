@@ -2,7 +2,6 @@ package id.ac.ui.cs.advprog.afk3.model.Builder;
 
 
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
-import id.ac.ui.cs.advprog.afk3.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
