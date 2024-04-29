@@ -23,8 +23,7 @@ public class ListingServiceImpl implements  ListingService{
     @Autowired
     private ListingRepository listingRepository;
 
-    @Value("${app.auth-domain}")
-    String authUrl;
+    String authUrl = "http://35.198.243.155";
 
     @Override
     public Listing create(Listing listing, String token){
