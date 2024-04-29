@@ -23,9 +23,8 @@ public class OrderServiceImpl implements OrderService{
 
     @Autowired
     private OrderBuilder orderBuilder;
-
-    @Value("app.auth-domain")
-    String authUrl;
+    
+    String authUrl = "http://35.198.243.155";
 
     public Order createOrder(Order order, String token){
         RestTemplate restTemplate = new RestTemplate();
