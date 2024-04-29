@@ -1,33 +1,32 @@
 package id.ac.ui.cs.advprog.afk3.controller;
 
-import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.model.Order;
-import id.ac.ui.cs.advprog.afk3.model.User;
 import id.ac.ui.cs.advprog.afk3.service.ListingService;
 import id.ac.ui.cs.advprog.afk3.service.OrderService;
-import id.ac.ui.cs.advprog.afk3.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/order")
 public class OrderController {
     @Autowired
     private OrderService orderService;
     @Autowired
     private ListingService listingService;
-    @Autowired
-    private UserService userService;
+
+    private String createHtml;
 
     @GetMapping("/create")
-    public String createOrderPage(Model model){
+    public ModelAndView createOrderPage(Model model){
         List<Listing> listingList = listingService.findAll();
         Order dto = new Order();
         dto.setListings(new ArrayList<Listing>());
@@ -35,13 +34,14 @@ public class OrderController {
             dto.getListings().add(p);
             System.out.println("order/create "+p.getSellerUsername());
         }
-        model.addAttribute("form", dto);
+        ModelAndView modelAndView = getModelAndView(createHtml);
+        modelAndView.addObject("form", dto);
         System.out.println("zczc"+listingList);
-        return "orderCreate";
+        return modelAndView;
     }
 
     @PostMapping("/create")
-    public String createOrderPagePost(@ModelAttribute("form") Order order, @RequestHeader("Authorization") String token){
+    public ResponseEntity<Order> createOrderPagePost(@ModelAttribute("form") Order order, @RequestHeader("Authorization") String token){
         List<Listing> listings = new ArrayList<>();
         for (Listing listing : order.getListings()){
             Listing temp = listingService.findById(listing.getId().toString());
@@ -49,11 +49,9 @@ public class OrderController {
             listings.add(listing);
             System.out.println(listing.getId()+" zczc "+listing.getName()+" "+listing.getQuantity()+" "+listing.getSellerUsername());
         }
-        orderService.createOrder(order, token);
+        Order order1 = orderService.createOrder(order, token);
 
-        System.out.println("/order/create"+order.getId());
-
-        return "redirect:../listing/list";
+        return new ResponseEntity<>(order1, HttpStatus.CREATED);
     }
 
     @GetMapping("/to-seller")
@@ -63,17 +61,23 @@ public class OrderController {
     }
 
     @PostMapping("/to-seller")
-    public String postOrderToSeller(@ModelAttribute("owner") Order order, Model model){
+    public ResponseEntity<List> postOrderToSeller(@ModelAttribute("owner") Order order, Model model){
         String authorUsername = order.getAuthorUsername();
         System.out.println("zczcz"+orderService.findAllWithSeller(authorUsername));
-        model.addAttribute("orders", orderService.findAllWithSeller(authorUsername));
-        return "orderPostToSeller";
+        List<Order> orderList = orderService.findAllWithSeller(authorUsername);
+        return new ResponseEntity<>(orderList, HttpStatus.OK);
     }
     @PostMapping("/set-status/{id}")
-    public String postSetStatusById(@PathVariable("id")String orderId, @ModelAttribute("status") String status,@RequestHeader("Authorization") String token){
+    public ResponseEntity<Order> postSetStatusById(@PathVariable("id")String orderId, @ModelAttribute("status") String status,@RequestHeader("Authorization") String token){
         System.out.println("/order/set-status"+orderId+" "+status);
-        orderService.updateStatus(orderId, status, token);
+        Order order = orderService.updateStatus(orderId, status, token);
         System.out.println(orderService.findById(orderId).getStatus());
-        return "redirect:../to-seller";
+        return new ResponseEntity<>(order, HttpStatus.OK);
+    }
+
+    private ModelAndView getModelAndView(String html) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName(html);
+        return modelAndView;
     }
 }

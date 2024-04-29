@@ -3,8 +3,6 @@ package id.ac.ui.cs.advprog.afk3.model.Builder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.OrderStatus;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.model.Order;
-import id.ac.ui.cs.advprog.afk3.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Time;
