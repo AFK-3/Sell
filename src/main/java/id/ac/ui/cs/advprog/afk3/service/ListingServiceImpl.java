@@ -3,16 +3,14 @@ package id.ac.ui.cs.advprog.afk3.service;
 
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
-import id.ac.ui.cs.advprog.afk3.model.User;
 import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
-import id.ac.ui.cs.advprog.afk3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -25,8 +23,8 @@ public class ListingServiceImpl implements  ListingService{
     @Autowired
     private ListingRepository listingRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    @Value("${app.auth-domain}")
+    String authUrl;
 
     @Override
     public Listing create(Listing listing, String token){
@@ -36,13 +34,13 @@ public class ListingServiceImpl implements  ListingService{
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
 
-        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
-        ResponseEntity<String > role = restTemplate.exchange("http://35.198.243.155/user/get-role", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
         if (owner.getBody()!=null && fieldValid(listing) && owner.getBody().equals(listing.getSellerUsername()) &&
         isSeller(role.getBody())){
-            listingRepository.createListing(listing);
+            listing = listingRepository.createListing(listing);
         }
-        return null;
+        return listing;
     }
 
     public boolean fieldValid(Listing listing){
@@ -69,8 +67,9 @@ public class ListingServiceImpl implements  ListingService{
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
-        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
-        ResponseEntity<String > role = restTemplate.exchange("http://35.198.243.155/user/get-role", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
+
         if (owner.getBody()!=null && owner.getBody().equals(listing.getSellerUsername()) &&
                 isSeller(role.getBody())){
             return listingRepository.update(listingId, listing);
@@ -85,7 +84,7 @@ public class ListingServiceImpl implements  ListingService{
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
-        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
         Listing listing = listingRepository.findById(listingId);
         if (listing != null && owner.getBody()!=null && owner.getBody().equals(listing.getSellerUsername())){
             listingRepository.delete(listingId);

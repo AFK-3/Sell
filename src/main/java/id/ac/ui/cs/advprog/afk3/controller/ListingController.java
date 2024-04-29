@@ -3,62 +3,71 @@ package id.ac.ui.cs.advprog.afk3.controller;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.service.ListingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/listing")
 public class ListingController {
     String listHTML = "listingList";
     String createHTML = "listingCreate";
     String editHTML = "listingEdit";
+
     @Autowired
     private ListingService listingService;
 
     @GetMapping("/create")
-    public String createListingPage(Model model){
+    public ModelAndView createListingPage(){
         Listing listing = new Listing();
-        model.addAttribute("listing", listing);
-        return createHTML;
+        ModelAndView modelAndView = getModelAndView(createHTML);
+        modelAndView.addObject("listing", listing);
+        return modelAndView;
     }
 
     @PostMapping("/create")
-    public String createListingPost(@ModelAttribute("product") Listing listing, @RequestHeader("Authorization") String token){
-        System.out.println("zczc"+token);
-        listingService.create(listing, token);
-        return "redirect:list";
+    public ResponseEntity<Listing> createListingPost(@ModelAttribute("product") Listing listing, @RequestHeader("Authorization") String token){
+        Listing newlisting = listingService.create(listing, token);
+        return new ResponseEntity<>(newlisting, HttpStatus.OK);
     }
 
     @GetMapping("/list")
-    public String listingListPage(Model model){
+    public ModelAndView listingListPage(Model model){
         List<Listing> allListings = listingService.findAll();
-        model.addAttribute("listings", allListings);
-        return listHTML;
-    }
-
-    @GetMapping(value="/edit/{listingId}")
-    public String editProductPage(Model model, @PathVariable("listingId") String productId){
-        Listing listing = listingService.findById(productId);
-        if (listing!=null){
-            model.addAttribute("listing", listing);
-            return editHTML;
-        }
-        return "redirect:../list";
+        ModelAndView modelAndView = getModelAndView(listHTML);
+        modelAndView.addObject("listings", allListings);
+        return modelAndView;
     }
 
     @PostMapping("/edit")
-    public String editProductPost(@ModelAttribute("listing") Listing listing, @RequestHeader("Authorization") String token){
+    public ResponseEntity<Listing> editProductPost(@ModelAttribute("listing") Listing listing, @RequestHeader("Authorization") String token){
         System.out.println("zczc edit listing"+listing);
         listingService.update(listing.getId().toString(), listing ,token);
-        return "redirect:list";
+        return new ResponseEntity<>(listing, HttpStatus.OK);
     }
 
     @PostMapping("/delete")
-    public String deleteListing(Model model, @RequestParam("listingId") String listingId, @RequestHeader("Authorization") String token){
+    public ResponseEntity<String> deleteListing(Model model, @RequestParam("listingId") String listingId, @RequestHeader("Authorization") String token){
         listingService.deleteListingById(listingId,token);
-        return "redirect:list";
+        return new ResponseEntity<>("Listing with ID: "+listingId+" deleted successfully!", HttpStatus.OK);
+    }
+
+    @GetMapping("/get-by-id/{listingId}")
+    public ResponseEntity<Listing> getById(Model model, @RequestParam("listingId") String listingId, @RequestHeader("Authorization") String token) {
+        Listing foundListing = listingService.findById(listingId);
+        if (foundListing==null){
+            return new ResponseEntity<Listing>(foundListing, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Listing>(foundListing, HttpStatus.FOUND);
+    }
+    private ModelAndView getModelAndView(String html) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName(html);
+        return modelAndView;
     }
 }

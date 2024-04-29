@@ -4,8 +4,8 @@ import id.ac.ui.cs.advprog.afk3.model.Builder.OrderBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Order;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
-import id.ac.ui.cs.advprog.afk3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
@@ -25,16 +24,16 @@ public class OrderServiceImpl implements OrderService{
     @Autowired
     private OrderBuilder orderBuilder;
 
-    @Autowired
-    private UserRepository userRepository;
+    @Value("app.auth-domain")
+    String authUrl;
 
     public Order createOrder(Order order, String token){
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
-        ResponseEntity<String> authorData = restTemplate.exchange("http://35.198.243.155/user/get-role", HttpMethod.GET,entity ,String.class);
-        ResponseEntity<String > owner = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String> authorData = restTemplate.exchange(authUrl+"/user/get-role", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String > owner = restTemplate.exchange(authUrl+"/user/get-username", HttpMethod.GET,entity ,String.class);
 
         if (isOrderValid(order)
                 && isUserBuyer(authorData.getBody())
@@ -52,7 +51,7 @@ public class OrderServiceImpl implements OrderService{
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
-        ResponseEntity<String> loggedin = restTemplate.exchange("http://35.198.243.155/user/get-username", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String> loggedin = restTemplate.exchange(authUrl+"/user/get-username", HttpMethod.GET,entity ,String.class);
 
         String authorUsername = loggedin.getBody();
 
