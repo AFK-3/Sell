@@ -23,7 +23,7 @@ public class ListingServiceImpl implements  ListingService{
     @Autowired
     private ListingRepository listingRepository;
 
-    @Value("app.auth-domain")
+    @Value("${app.auth-domain}")
     String authUrl;
 
     @Override
