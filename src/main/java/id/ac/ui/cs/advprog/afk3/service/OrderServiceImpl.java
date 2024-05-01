@@ -24,7 +24,7 @@ public class OrderServiceImpl implements OrderService{
     @Autowired
     private OrderBuilder orderBuilder;
 
-    @Value("app.auth-domain")
+    @Value("${app.auth-domain}")
     String authUrl;
 
     public Order createOrder(Order order, String token){
