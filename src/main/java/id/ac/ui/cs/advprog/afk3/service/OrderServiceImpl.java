@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.afk3.service;
 
 import id.ac.ui.cs.advprog.afk3.model.Builder.OrderBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
+import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.model.Order;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,14 @@ public class OrderServiceImpl implements OrderService{
     @Autowired
     private OrderRepository orderRepository;
 
-    @Autowired
-    private OrderBuilder orderBuilder;
+    private final OrderBuilder orderBuilder = new OrderBuilder();
 
     @Value("${app.auth-domain}")
     String authUrl;
 
+    RestTemplate restTemplate = new RestTemplate();
+
     public Order createOrder(Order order, String token){
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
@@ -47,16 +48,25 @@ public class OrderServiceImpl implements OrderService{
     }
     @Override
     public Order updateStatus(String orderId, String status, String token){
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
         ResponseEntity<String> loggedin = restTemplate.exchange(authUrl+"/user/get-username", HttpMethod.GET,entity ,String.class);
 
-        String authorUsername = loggedin.getBody();
+        String sellerUsername = loggedin.getBody();
 
         Order order = findById(orderId);
-        if (order != null && order.getAuthorUsername().equals(authorUsername)) {
+        if (order==null){
+            throw new NoSuchElementException();
+        }
+        boolean sellerFound = false;
+        for (Listing l : order.getListings()){
+            if (l.getSellerUsername().equals(sellerUsername)){
+                sellerFound = true;
+                break;
+            }
+        }
+        if (sellerFound) {
             Order newOrder = orderBuilder.setCurrent(order).addStatus(status).build();
             orderRepository.save(newOrder);
             return newOrder;
@@ -81,15 +91,16 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private boolean isOrderValid(Order order){
-        return order.getId()==null || orderRepository.findById(order.getId().toString())==null;
+        return orderRepository.findById(order.getId().toString()) == null;
     }
 
     private boolean isUserBuyer(String role){
-        return UserType.BUYERSELLER.name().equals(role)
-                || UserType.BUYER.name().equals(role);
+        if (UserType.BUYERSELLER.name().equals(role)) return true;
+        else return UserType.BUYER.name().equals(role);
     }
 
     private  boolean isAuthorAccessing(ResponseEntity<String> author, Order order){
-        return author.getBody()!=null && order.getAuthorUsername().equals(author.getBody());
+        if (author.getBody()!=null) return order.getAuthorUsername().equals(author.getBody());
+        return false;
     }
 }

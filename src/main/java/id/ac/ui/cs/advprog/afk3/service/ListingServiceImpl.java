@@ -26,9 +26,11 @@ public class ListingServiceImpl implements  ListingService{
     @Value("${app.auth-domain}")
     String authUrl;
 
+    RestTemplate restTemplate = new RestTemplate();
+
     @Override
     public Listing create(Listing listing, String token){
-        RestTemplate restTemplate = new RestTemplate();
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
@@ -36,8 +38,8 @@ public class ListingServiceImpl implements  ListingService{
 
         ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
-        if (owner.getBody()!=null && fieldValid(listing) && owner.getBody().equals(listing.getSellerUsername()) &&
-        isSeller(role.getBody())){
+        System.out.println("zczc"+owner+" "+role);
+        if (owner.getBody()!=null && fieldValid(listing) && owner.getBody().equals(listing.getSellerUsername()) && isSeller(role.getBody())){
             listing = listingRepository.createListing(listing);
         }
         return listing;
@@ -62,7 +64,6 @@ public class ListingServiceImpl implements  ListingService{
 
     @Override
     public Listing update (String listingId, Listing listing, String token){
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
@@ -70,8 +71,7 @@ public class ListingServiceImpl implements  ListingService{
         ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
 
-        if (owner.getBody()!=null && owner.getBody().equals(listing.getSellerUsername()) &&
-                isSeller(role.getBody())){
+        if (owner.getBody()!=null && owner.getBody().equals(listing.getSellerUsername()) && isSeller(role.getBody())){
             return listingRepository.update(listingId, listing);
         }
         return null;
@@ -79,7 +79,6 @@ public class ListingServiceImpl implements  ListingService{
 
     @Override
     public void deleteListingById(String listingId, String token) {
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
@@ -92,7 +91,7 @@ public class ListingServiceImpl implements  ListingService{
     }
 
     private boolean isSeller(String role){
-        return UserType.BUYERSELLER.name().equals(role) ||
-                UserType.SELLER.name().equals(role);
+        if (role.equals(UserType.SELLER.name())) return true;
+        else return role.equals(UserType.BUYERSELLER.name());
     }
 }
