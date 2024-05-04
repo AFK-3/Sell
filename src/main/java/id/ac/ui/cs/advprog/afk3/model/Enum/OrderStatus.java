@@ -2,7 +2,6 @@ package id.ac.ui.cs.advprog.afk3.model.Enum;
 
 import lombok.Getter;
 
-@Getter
 public enum OrderStatus {
     WAITINGPAYMENT("WAITING_PAYMENT"),
     FAILED("FAILED"),

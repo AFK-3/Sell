@@ -14,11 +14,12 @@ public class ListingRepository {
     private final List<Listing> listingData = new ArrayList<>();
 
     public ListingRepository(){
+        this.listingBuilder = new ListingBuilder();
         System.out.println("zczc listing repo created");
     }
 
-    @Autowired
     private ListingBuilder listingBuilder;
+
     public Listing createListing(Listing listing){
         listing = listingBuilder.reset().setCurrent(listing).addId().build();
         listingData.add(listing);
