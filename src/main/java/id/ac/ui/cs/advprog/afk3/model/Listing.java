@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter @Setter
 public class Listing {
     private UUID id;
-
     private String sellerUsername;
     private String name;
     private String description;

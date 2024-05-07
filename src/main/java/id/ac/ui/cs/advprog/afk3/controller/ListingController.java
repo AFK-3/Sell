@@ -46,15 +46,17 @@ public class ListingController {
 
     @PostMapping("/edit")
     public ResponseEntity<Listing> editProductPost(@ModelAttribute("listing") Listing listing, @RequestHeader("Authorization") String token){
-        System.out.println("zczc edit listing"+listing);
         listingService.update(listing.getId().toString(), listing ,token);
         return new ResponseEntity<>(listing, HttpStatus.OK);
     }
 
     @PostMapping("/delete")
     public ResponseEntity<String> deleteListing(Model model, @RequestParam("listingId") String listingId, @RequestHeader("Authorization") String token){
-        listingService.deleteListingById(listingId,token);
-        return new ResponseEntity<>("Listing with ID: "+listingId+" deleted successfully!", HttpStatus.OK);
+        boolean success = listingService.deleteListingById(listingId,token);
+        if (success){
+            return new ResponseEntity<>("Listing with ID: "+listingId+" deleted successfully!", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Listing with ID: "+listingId+" FAILED to be deleted!", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/get-by-id/{listingId}")
@@ -65,6 +67,16 @@ public class ListingController {
         }
         return new ResponseEntity<Listing>(foundListing, HttpStatus.FOUND);
     }
+
+    @GetMapping("/get-by-seller/")
+    public ResponseEntity<List<Listing>> getBySellerId(Model model, @RequestHeader("Authorization") String token) {
+        List<Listing> foundListing = listingService.findAllBySellerId(token);
+        if (foundListing==null){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(foundListing, HttpStatus.FOUND);
+    }
+
     private ModelAndView getModelAndView(String html) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName(html);
