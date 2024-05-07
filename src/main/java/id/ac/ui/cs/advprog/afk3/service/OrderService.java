@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.afk3.service;
 
+import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.model.Order;
 import org.springframework.stereotype.Service;
 
@@ -11,4 +12,5 @@ public interface OrderService {
     Order findById(String orderId);
     List<Order> findAllByAuthor(String username);
     List<Order> findAllWithSeller(String username);
+    void deleteAllWithListing(Listing listing);
 }

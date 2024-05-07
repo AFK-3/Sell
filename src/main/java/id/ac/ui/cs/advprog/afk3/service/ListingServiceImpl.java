@@ -4,12 +4,11 @@ package id.ac.ui.cs.advprog.afk3.service;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
+import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,6 +22,9 @@ public class ListingServiceImpl implements  ListingService{
     @Autowired
     private ListingRepository listingRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     @Value("${app.auth-domain}")
     String authUrl;
 
@@ -34,7 +36,6 @@ public class ListingServiceImpl implements  ListingService{
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
-
 
         ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
@@ -58,6 +59,19 @@ public class ListingServiceImpl implements  ListingService{
     }
 
     @Override
+    public List<Listing> findAllBySellerId(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+
+        ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
+        if (owner.getBody()!=null){
+            return listingRepository.findBySellerId(owner.getBody());
+        }
+        return null;
+    }
+
+    @Override
     public Listing findById(String listingId){
         return listingRepository.findById(listingId);
     }
@@ -78,7 +92,7 @@ public class ListingServiceImpl implements  ListingService{
     }
 
     @Override
-    public void deleteListingById(String listingId, String token) {
+    public boolean deleteListingById(String listingId, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
@@ -86,8 +100,30 @@ public class ListingServiceImpl implements  ListingService{
         ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
         Listing listing = listingRepository.findById(listingId);
         if (listing != null && owner.getBody()!=null && owner.getBody().equals(listing.getSellerUsername())){
+            deleteOrderAndPaymentWithListing(listingRepository.findById(listingId),token);
             listingRepository.delete(listingId);
+            return true;
         }
+        return false;
+    }
+
+    @Override
+    @Async
+    public void deleteOrderAndPaymentWithListing(Listing listing, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        String listingId = listing.getId().toString();
+//        ResponseEntity<String> owner = restTemplate.exchange(authUrl+"payment/delete-by-listing-id/"+listingId,
+//                HttpMethod.POST,entity ,
+//                String.class);
+        deleteOrderWithListing(listing);
+    }
+
+    @Async
+    void deleteOrderWithListing(Listing listing){
+        orderRepository.deleteAllWithListing(listing);
     }
 
     private boolean isSeller(String role){

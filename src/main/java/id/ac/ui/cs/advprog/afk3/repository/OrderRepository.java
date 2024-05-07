@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.afk3.repository;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import id.ac.ui.cs.advprog.afk3.model.Listing;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class OrderRepository {
-    private List<Order> orderData = new ArrayList();
+    private final List<Order> orderData = new ArrayList();
     public Order save(Order order){
         int i =0;
         for (Order savedOrder :orderData){
@@ -22,6 +23,9 @@ public class OrderRepository {
         }
         orderData.add(order);
         return order;
+    }
+    public Iterator<Order> findAll(){
+        return orderData.iterator();
     }
     public Order findById(String id){
         for (Order savedOrder : orderData){
@@ -51,5 +55,20 @@ public class OrderRepository {
             }
         }
         return result;
+    }
+
+    public void deleteAllWithListing(Listing listing){
+        List<Order> toBeDeleted = new ArrayList<>();
+        for (Order order : orderData){
+            for (Listing l : order.getListings()){
+                if (l.getId().equals(listing.getId())){
+                    toBeDeleted.add(order);
+                }
+            }
+        }
+        System.out.println(toBeDeleted);
+        for (Order order: toBeDeleted){
+            orderData.remove(order);
+        }
     }
 }

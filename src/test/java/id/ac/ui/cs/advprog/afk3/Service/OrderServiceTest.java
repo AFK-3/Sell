@@ -5,6 +5,7 @@ import id.ac.ui.cs.advprog.afk3.model.Builder.OrderBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.OrderStatus;
 import id.ac.ui.cs.advprog.afk3.model.Order;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
+import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
 import id.ac.ui.cs.advprog.afk3.service.OrderServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.concurrent.Exchanger;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,6 +33,8 @@ public class OrderServiceTest {
     OrderServiceImpl orderService;
     @Mock
     OrderRepository orderRepository;
+    @Mock
+    ListingRepository listingRepository;
     List<Order> orders;
 
     private OrderBuilder builder = new OrderBuilder();
@@ -81,7 +83,7 @@ public class OrderServiceTest {
 
     @Test
     void testCreateOrderBuyer(){
-        Order order =  orders.get(1);
+        Order order =  orders.get(0);
         ResponseEntity<String> re = new ResponseEntity<String>("Safira Sudarajat", HttpStatus.OK);
         ResponseEntity<String> re2 = new ResponseEntity<String>("BUYER", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
@@ -93,14 +95,15 @@ public class OrderServiceTest {
                         "null/user/get-username", HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
         doReturn(order).when(orderRepository).save(order);
+        when(listingRepository.findById(order.getListings().getFirst().getId().toString())).thenReturn(order.getListings().getFirst());
         Order result  = orderService.createOrder(order, token);
-        verify(orderRepository, times(1)).save(order);
+        verify(orderRepository, times(1)).save(any(Order.class));
         assertEquals(order.getId(), result.getId());
     }
 
     @Test
     void testCreateOrderBuyerSeller(){
-        Order order =  orders.get(1);
+        Order order =  orders.getFirst();
         ResponseEntity<String> re = new ResponseEntity<String>("Safira Sudarajat", HttpStatus.OK);
         ResponseEntity<String> re2 = new ResponseEntity<String>("BUYERSELLER", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
@@ -112,34 +115,17 @@ public class OrderServiceTest {
                         "null/user/get-username", HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
         doReturn(order).when(orderRepository).save(order);
+        when(listingRepository.findById(order.getListings().getFirst().getId().toString())).thenReturn(order.getListings().getFirst());
         Order result  = orderService.createOrder(order, token);
         verify(orderRepository, times(1)).save(order);
         assertEquals(order.getId(), result.getId());
-    }
-
-    @Test
-    void testCreateOrderIfAlreadyExists(){
-        Order order = orders.get(1);
-        doReturn(order).when(orderRepository).findById(order.getId().toString());
-        ResponseEntity<String> re = new ResponseEntity<String>("Safira Sudarajat", HttpStatus.OK);
-        ResponseEntity<String> re2 = new ResponseEntity<String>("BUYER", HttpStatus.OK);
-        HttpEntity<String> entity = createHTTPHeader();
-
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-role", HttpMethod.GET, entity,String.class))
-                .thenReturn(re2);
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
-        assertNull(orderService.createOrder(order, token));
-        verify(orderRepository, times(0)).save(order);
     }
 
     @Test
     void testCreateOrderIfInvalidJWT(){
         Order order =  orders.get(1);
         ResponseEntity re = new ResponseEntity(null, HttpStatus.OK);
-        ResponseEntity<String> re2 = new ResponseEntity<String>("BUYERSELLER", HttpStatus.OK);
+        ResponseEntity re2 = new ResponseEntity<>(null, HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
 
         Mockito.when(restTemplate.exchange(
@@ -150,6 +136,79 @@ public class OrderServiceTest {
                 .thenReturn(re);
         assertNull(orderService.createOrder(order, token));
         verify(orderRepository, times(0)).save(order);
+    }
+
+    @Test
+    void testCreateOrderIfInvalidRole(){
+        Order order =  orders.get(1);
+        ResponseEntity<String> re = new ResponseEntity<String>("Safira Sudarajat", HttpStatus.OK);
+        ResponseEntity re2 = new ResponseEntity<>(null, HttpStatus.OK);
+        HttpEntity<String> entity = createHTTPHeader();
+
+        Mockito.when(restTemplate.exchange(
+                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                .thenReturn(re2);
+        Mockito.when(restTemplate.exchange(
+                        "null/user/get-username", HttpMethod.GET, entity,String.class))
+                .thenReturn(re);
+        assertNull(orderService.createOrder(order, token));
+        verify(orderRepository, times(0)).save(order);
+    }
+
+    @Test
+    void testCreateOrderIfInvalidUsername(){
+        Order order =  orders.get(1);
+        ResponseEntity re = new ResponseEntity(null, HttpStatus.OK);
+        ResponseEntity<String> re2 = new ResponseEntity<String>("BUYER", HttpStatus.OK);
+        HttpEntity<String> entity = createHTTPHeader();
+
+        Mockito.when(restTemplate.exchange(
+                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                .thenReturn(re2);
+        Mockito.when(restTemplate.exchange(
+                        "null/user/get-username", HttpMethod.GET, entity,String.class))
+                .thenReturn(re);
+        assertNull(orderService.createOrder(order, token));
+        verify(orderRepository, times(0)).save(order);
+    }
+
+    @Test
+    void testCreateOrderInvalidQuantity(){
+        Order order =  orders.get(0);
+        ResponseEntity<String> re = new ResponseEntity<String>("Safira Sudarajat", HttpStatus.OK);
+        ResponseEntity<String> re2 = new ResponseEntity<String>("BUYER", HttpStatus.OK);
+        HttpEntity<String> entity = createHTTPHeader();
+
+        Listing listingExist = listingBuilder.reset()
+                .addId(UUID.fromString("eb558e9f-1c39-460e-8860-71af6af63bd6"))
+                .addQuantity(1)
+                .build();
+
+        Mockito.when(restTemplate.exchange(
+                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                .thenReturn(re2);
+        Mockito.when(restTemplate.exchange(
+                        "null/user/get-username", HttpMethod.GET, entity,String.class))
+                .thenReturn(re);
+        when(listingRepository.findById(order.getListings().getFirst().getId().toString())).thenReturn(listingExist);
+        assertThrows(IllegalArgumentException.class,()->{orderService.createOrder(order, token);});
+    }
+
+    @Test
+    void testCreateOrderEmptyList(){
+        Order order =  orders.get(0);
+        order.setListings(new ArrayList<>());
+        ResponseEntity<String> re = new ResponseEntity<String>("Safira Sudarajat", HttpStatus.OK);
+        ResponseEntity<String> re2 = new ResponseEntity<String>("BUYER", HttpStatus.OK);
+        HttpEntity<String> entity = createHTTPHeader();
+
+        Mockito.when(restTemplate.exchange(
+                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                .thenReturn(re2);
+        Mockito.when(restTemplate.exchange(
+                        "null/user/get-username", HttpMethod.GET, entity,String.class))
+                .thenReturn(re);
+        assertThrows(IllegalArgumentException.class,()->{orderService.createOrder(order, token);});
     }
 
     @Test
@@ -262,6 +321,19 @@ public class OrderServiceTest {
         assertEquals(results, orders);
     }
 
+    @Test
+    void testDeleteAllWithListing(){
+        Listing listing1 = listingBuilder.reset()
+                .addId(UUID.fromString("eb558e9f-1c39-460e-8860-71af6af63bd6"))
+                .addSellerUsername("penjual1")
+                .addQuantity(2)
+                .addName("Sampo Cap Bambang")
+                .build();
+
+        orderService.deleteAllWithListing(listing1);
+        verify(orderRepository,times(1)).deleteAllWithListing(listing1);
+    }
+
     private HttpEntity<String> createHTTPHeader(){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
@@ -272,8 +344,6 @@ public class OrderServiceTest {
         List<Order> ordersLocal = new ArrayList<>();
         for (Order o: orders){
             for (Listing l : o.getListings()) {
-                System.out.println(l.getSellerUsername() + " " + l.getName());
-                System.out.println(l.getSellerUsername().equals(username));
                 if (l.getSellerUsername().equals(username)) {
                     ordersLocal.add(o);
                     break;

@@ -23,7 +23,7 @@ public class OrderController {
     @Autowired
     private ListingService listingService;
 
-    private String createHtml;
+    private String createHtml = "orderCreate";
 
     @GetMapping("/create")
     public ModelAndView createOrderPage(Model model){
@@ -41,13 +41,11 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Order> createOrderPagePost(@ModelAttribute("form") Order order, @RequestHeader("Authorization") String token){
-        List<Listing> listings = new ArrayList<>();
+    public ResponseEntity<Order> createOrderPagePost(@RequestBody Order order, @RequestHeader("Authorization") String token){
+        System.out.println(order);
         for (Listing listing : order.getListings()){
             Listing temp = listingService.findById(listing.getId().toString());
             listing.setSellerUsername(temp.getSellerUsername());
-            listings.add(listing);
-            System.out.println(listing.getId()+" zczc "+listing.getName()+" "+listing.getQuantity()+" "+listing.getSellerUsername());
         }
         Order order1 = orderService.createOrder(order, token);
 

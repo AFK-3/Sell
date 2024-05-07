@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class ListingRepository {
@@ -55,6 +56,12 @@ public class ListingRepository {
             }
         }
         return null;
+    }
+
+    public List<Listing> findBySellerId(String username){
+        return listingData.stream().filter(
+                listing -> listing.getSellerUsername().equals(username))
+                .collect(Collectors.toList());
     }
 
     public void delete(String id){

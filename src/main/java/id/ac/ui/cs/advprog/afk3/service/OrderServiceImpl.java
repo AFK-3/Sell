@@ -4,6 +4,7 @@ import id.ac.ui.cs.advprog.afk3.model.Builder.OrderBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.model.Order;
+import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -22,6 +24,9 @@ public class OrderServiceImpl implements OrderService{
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private ListingRepository listingRepository;
+
     private final OrderBuilder orderBuilder = new OrderBuilder();
 
     @Value("${app.auth-domain}")
@@ -29,6 +34,7 @@ public class OrderServiceImpl implements OrderService{
 
     RestTemplate restTemplate = new RestTemplate();
 
+    @Override
     public Order createOrder(Order order, String token){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
@@ -36,11 +42,34 @@ public class OrderServiceImpl implements OrderService{
         ResponseEntity<String> authorData = restTemplate.exchange(authUrl+"/user/get-role", HttpMethod.GET,entity ,String.class);
         ResponseEntity<String > owner = restTemplate.exchange(authUrl+"/user/get-username", HttpMethod.GET,entity ,String.class);
 
-        if (isOrderValid(order)
-                && isUserBuyer(authorData.getBody())
+        System.out.println(order.getId()+" "+authorData.getBody()+" "+owner.getBody());
+        if (isUserBuyer(authorData.getBody())
                 && isAuthorAccessing(owner, order))
         {
-            Order newOrder = orderBuilder.reset().setCurrent(order).firstSetUp().build();
+            // Kurangin semua quantitas listing
+            // Kalo udah habis / melebihi stok, otomatis batal
+            List<Listing> outOfStock = new ArrayList<>();
+            for (Listing listing : order.getListings()){
+                Listing exist = listingRepository.findById(listing.getId().toString());
+                if (exist.getQuantity()-listing.getQuantity()>=0) {
+                    exist.setQuantity(exist.getQuantity() - listing.getQuantity());
+                }else{
+                    outOfStock.add(exist);
+                }
+            }
+            for (Listing l: outOfStock){
+                for (int i=0; i<order.getListings().size(); i++){
+                    if (order.getListings().get(i).getId().equals(l.getId())){
+                        order.getListings().remove(i);
+                        break;
+                    }
+                }
+            }
+            Order newOrder = orderBuilder.reset().setCurrent(order)
+                    .addListings(order.getListings())
+                    .firstSetUp()
+                    .build();
+            System.out.println(newOrder);
             orderRepository.save(newOrder);
             return newOrder;
         }
@@ -90,8 +119,9 @@ public class OrderServiceImpl implements OrderService{
         return orderRepository.findAllWithSeller(username);
     }
 
-    private boolean isOrderValid(Order order){
-        return orderRepository.findById(order.getId().toString()) == null;
+    @Override
+    public void deleteAllWithListing(Listing listing) {
+        orderRepository.deleteAllWithListing(listing);
     }
 
     private boolean isUserBuyer(String role){

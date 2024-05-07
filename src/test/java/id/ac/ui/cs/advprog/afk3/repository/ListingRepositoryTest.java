@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +37,6 @@ public class ListingRepositoryTest {
     }
 
     Listing createListing(String name, String id, int quantity){
-        System.out.println("zczc"+listingBuilder);
         return listingBuilder.reset().addId(UUID.fromString(id)).addName(name).addQuantity(quantity).build();
     }
 
@@ -156,5 +156,35 @@ public class ListingRepositoryTest {
     void testCreateGetNotFound(){
         Listing listing = listingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
         assertNull(listing);
+    }
+
+    @Test
+    void testFindBySellerId(){
+        Listing listing1 = createAndSaveListing("Sampo Cap Bambang","eb558e9f-1c39-460e-8860-71af6af63bd6",100);
+        listing1.setSellerUsername("a");
+        Listing listing2 = createAndSaveListing("Sampo Cap Bambang2","eb558e9f-1c39-460e-8860-71af6af63bd7",200);
+        listing2.setSellerUsername("a");
+        Listing listing3 = createAndSaveListing("Sampo Cap Bambang3","eb558e9f-1c39-460e-8860-71af6af63bd8",300);
+        listing3.setSellerUsername("b");
+
+        List<Listing> result = listingRepository.findBySellerId("a");
+        assertEquals(2, result.size());
+        assertEquals("Sampo Cap Bambang", result.getFirst().getName());
+        assertEquals("eb558e9f-1c39-460e-8860-71af6af63bd6", result.getFirst().getId().toString());
+        assertEquals("Sampo Cap Bambang2", result.get(1).getName());
+        assertEquals("eb558e9f-1c39-460e-8860-71af6af63bd7", result.get(1).getId().toString());
+    }
+
+    @Test
+    void testFindByListingIdNotFound(){
+        Listing listing1 = createAndSaveListing("Sampo Cap Bambang","eb558e9f-1c39-460e-8860-71af6af63bd6",100);
+        Listing listing = listingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd7");
+        assertNull(listing);
+    }
+    @Test
+    void testFindByListingIdFound(){
+        Listing listing1 = createAndSaveListing("Sampo Cap Bambang","eb558e9f-1c39-460e-8860-71af6af63bd6",100);
+        Listing listing = listingRepository.findById("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        assertEquals("eb558e9f-1c39-460e-8860-71af6af63bd6", listing.getId().toString());
     }
 }
