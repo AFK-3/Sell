@@ -4,6 +4,7 @@ import id.ac.ui.cs.advprog.afk3.model.Builder.ListingBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
+import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
 import id.ac.ui.cs.advprog.afk3.service.ListingServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +20,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -28,6 +30,9 @@ import static org.mockito.Mockito.*;
 public class ListingServiceTest {
     @MockBean
     ListingRepository listingRepository;
+
+    @MockBean
+    OrderRepository orderRepository;
 
     @InjectMocks
     ListingServiceImpl service;
@@ -41,7 +46,6 @@ public class ListingServiceTest {
 
     @BeforeEach
     void setUp(){
-        MockitoAnnotations.initMocks(this);
         allListings = new ArrayList<>();
         createAndSaveListing("nama","eb558e9f-1c39-460e-8860-71af6af63bd6",1, "SELLER", "user");
     }
@@ -200,9 +204,7 @@ public class ListingServiceTest {
                         "nulluser/get-username",HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
         when(listingRepository.update(listing3.getId().toString(), listing3)).thenReturn(editRepoMock(listing3));
-        System.out.println(listing2.getId().toString());
         service.update(listing3.getId().toString(), listing3, token);
-        System.out.println(listing2.getId().toString());
         when(listingRepository.findById(listing2.getId().toString())).thenReturn(listing3);
         Listing resultEdit = service.findById(listing2.getId().toString());
 
@@ -225,6 +227,7 @@ public class ListingServiceTest {
                 .thenReturn(re);
         when(listingRepository.findById(listing2.getId().toString())).thenReturn(listing2);
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
+        verify(orderRepository, times(1)).deleteAllWithListing(listing2);
         allListings.remove(listing2); // assume listingRepo deletes id
 
         when(listingRepository.findAll()).thenReturn(allListings.iterator());
@@ -276,6 +279,38 @@ public class ListingServiceTest {
                 .thenReturn(re);
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
         verify(listingRepository, times(0)).delete("00558e9f-1c39-460e-8860-71af6af63bc7");
+    }
+
+    @Test
+    void testFindAllBySellerId(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+
+        ResponseEntity<String> re = new ResponseEntity<String>("user", HttpStatus.OK);
+        Mockito.when(restTemplate.exchange(
+                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
+                .thenReturn(re);
+        when(listingRepository.findBySellerId("user")).thenReturn(
+                allListings.stream().filter(
+                        listing -> {return listing.getSellerUsername().equals("user");}).collect(Collectors.toList())
+                );
+        List<Listing> result = service.findAllBySellerId(token);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testFindAllBySellerIdNotFound(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+
+        ResponseEntity re = new ResponseEntity(null, HttpStatus.OK);
+        Mockito.when(restTemplate.exchange(
+                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
+                .thenReturn(re);
+        List<Listing> result = service.findAllBySellerId(token);
+        assertNull(null);
     }
 }
 

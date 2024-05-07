@@ -9,10 +9,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class OrderRepositoryTest {
     OrderRepository orderRepository;
@@ -49,10 +53,13 @@ public class OrderRepositoryTest {
                 .addAuthor("Pemilik3")
                 .build();
         orders.add(order3);
+        orderRepository.save(order1);
+        orderRepository.save(order2);
+        orderRepository.save(order3);
     }
 
     @Test
-    void testSveCreate(){
+    void testSaveCreate(){
         Order order = orders.get(1);
         Order result = orderRepository.save(order);
 
@@ -139,6 +146,33 @@ public class OrderRepositoryTest {
         }
         List<Order> orderList = orderRepository.findAllWithSeller("aa".toUpperCase());
         assertEquals(0, orderList.size());
+    }
+
+    @Test
+    void testDeleteAllWithListing(){
+        ListingBuilder builder = new ListingBuilder();
+        Listing listing = builder.reset()
+                .addId(UUID.fromString("eb558e9f-1c39-460e-8860-71af6af63bd6"))
+                .addQuantity(100).addName("Sampo cap Bambang")
+                .addDescription("bjirr..")
+                .addSellerUsername("aa").build();
+        orderRepository.deleteAllWithListing(listing);
+        Iterator<Order> it = orderRepository.findAll();
+        assertFalse(it.hasNext());
+    }
+
+    @Test
+    void testDeleteAllWithListingNotFound(){
+        ListingBuilder builder = new ListingBuilder();
+        Listing listing = builder.reset()
+                .addId(UUID.fromString("eb558e9f-1c39-460e-8860-71af6af63bd7"))
+                .addQuantity(100).addName("Sampo cap Bambang")
+                .addSellerUsername("aa").build();
+        orderRepository.deleteAllWithListing(listing);
+        Iterator<Order> it = orderRepository.findAll();
+        assertNotNull(it.next());
+        assertNotNull(it.next());
+        assertNotNull(it.next());
     }
 
 }
