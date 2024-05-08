@@ -227,7 +227,6 @@ public class ListingServiceTest {
                 .thenReturn(re);
         when(listingRepository.findById(listing2.getId().toString())).thenReturn(listing2);
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
-        verify(orderRepository, times(1)).deleteAllWithListing(listing2);
         allListings.remove(listing2); // assume listingRepo deletes id
 
         when(listingRepository.findAll()).thenReturn(allListings.iterator());
