@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -100,7 +101,6 @@ public class ListingServiceImpl implements  ListingService{
         ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
         Listing listing = listingRepository.findById(listingId);
         if (listing != null && owner.getBody()!=null && owner.getBody().equals(listing.getSellerUsername())){
-            deleteOrderAndPaymentWithListing(listingRepository.findById(listingId),token);
             listingRepository.delete(listingId);
             return true;
         }
@@ -108,22 +108,30 @@ public class ListingServiceImpl implements  ListingService{
     }
 
     @Override
-    @Async
-    public void deleteOrderAndPaymentWithListing(Listing listing, String token) {
+    @Async("threadPoolTaskExecutor")
+    public CompletableFuture<Boolean> deleteOrderAndPaymentWithListing(String listingId, String token) {
+        Listing listing = listingRepository.findById(listingId);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        String listingId = listing.getId().toString();
-//        ResponseEntity<String> owner = restTemplate.exchange(authUrl+"payment/delete-by-listing-id/"+listingId,
+        try{
+            CompletableFuture<Boolean> deleteOrderAsync = deleteOrderWithListing(listing);
+//        ResponseEntity<String> result = restTemplate.exchange(authUrl+"payment/delete-by-listing-id/"+listingId,
 //                HttpMethod.POST,entity ,
 //                String.class);
-        deleteOrderWithListing(listing);
+            boolean resultFromDeleteOrder = deleteOrderAsync.join();
+            return CompletableFuture.completedFuture(resultFromDeleteOrder);
+        }
+        catch (Exception e){
+            return CompletableFuture.completedFuture(false);
+        }
     }
 
     @Async
-    void deleteOrderWithListing(Listing listing){
-        orderRepository.deleteAllWithListing(listing);
+    public CompletableFuture<Boolean> deleteOrderWithListing(Listing listing){
+        boolean result = orderRepository.deleteAllWithListing(listing);
+        return CompletableFuture.completedFuture(result);
     }
 
     private boolean isSeller(String role){

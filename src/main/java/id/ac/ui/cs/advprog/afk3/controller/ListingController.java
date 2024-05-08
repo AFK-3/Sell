@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/listing")
@@ -52,6 +53,7 @@ public class ListingController {
 
     @PostMapping("/delete")
     public ResponseEntity<String> deleteListing(Model model, @RequestParam("listingId") String listingId, @RequestHeader("Authorization") String token){
+        CompletableFuture<Boolean> resultFromDelete = listingService.deleteOrderAndPaymentWithListing(listingId, token);
         boolean success = listingService.deleteListingById(listingId,token);
         if (success){
             return new ResponseEntity<>("Listing with ID: "+listingId+" deleted successfully!", HttpStatus.OK);

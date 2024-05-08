@@ -57,7 +57,7 @@ public class OrderRepository {
         return result;
     }
 
-    public void deleteAllWithListing(Listing listing){
+    public boolean deleteAllWithListing(Listing listing){
         List<Order> toBeDeleted = new ArrayList<>();
         for (Order order : orderData){
             for (Listing l : order.getListings()){
@@ -70,5 +70,6 @@ public class OrderRepository {
         for (Order order: toBeDeleted){
             orderData.remove(order);
         }
+        return !toBeDeleted.isEmpty();
     }
 }
