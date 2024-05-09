@@ -18,10 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,7 +92,7 @@ public class OrderServiceTest {
                         "null/user/get-username", HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
         doReturn(order).when(orderRepository).save(order);
-        when(listingRepository.findById(order.getListings().getFirst().getId().toString())).thenReturn(order.getListings().getFirst());
+        when(listingRepository.findById(order.getListings().getFirst().getId())).thenReturn(Optional.of(order.getListings().getFirst()));
         Order result  = orderService.createOrder(order, token);
         verify(orderRepository, times(1)).save(any(Order.class));
         assertEquals(order.getId(), result.getId());
@@ -115,7 +112,7 @@ public class OrderServiceTest {
                         "null/user/get-username", HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
         doReturn(order).when(orderRepository).save(order);
-        when(listingRepository.findById(order.getListings().getFirst().getId().toString())).thenReturn(order.getListings().getFirst());
+        when(listingRepository.findById(order.getListings().getFirst().getId())).thenReturn(Optional.of(order.getListings().getFirst()));
         Order result  = orderService.createOrder(order, token);
         verify(orderRepository, times(1)).save(order);
         assertEquals(order.getId(), result.getId());
@@ -190,7 +187,7 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.exchange(
                         "null/user/get-username", HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
-        when(listingRepository.findById(order.getListings().getFirst().getId().toString())).thenReturn(listingExist);
+        when(listingRepository.findById(order.getListings().getFirst().getId().toString())).thenReturn(Optional.of(listingExist));
         assertThrows(IllegalArgumentException.class,()->{orderService.createOrder(order, token);});
     }
 
@@ -224,9 +221,9 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.exchange(
                         "null/user/get-username", HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
-        doReturn(order).when(orderRepository).findById(order.getId().toString());
+        doReturn(Optional.of(order)).when(orderRepository).findById(order.getId().toString());
         doReturn(newOrder).when(orderRepository).save(any(Order.class));
-        Order result = orderService.updateStatus(order.getId().toString(), OrderStatus.SUCCESS.name(), token);
+        Order result = orderService.updateStatus(order.getId(), OrderStatus.SUCCESS.name(), token);
 
         assertEquals(order.getId(), result.getId());
         assertEquals(OrderStatus.SUCCESS.name(), result.getStatus());
@@ -236,7 +233,7 @@ public class OrderServiceTest {
     @Test
     void testUpdateStatusInvalidStatus(){
         Order order = orders.get(1);
-        doReturn(order).when(orderRepository).findById(order.getId().toString());
+        doReturn(Optional.of(order)).when(orderRepository).findById(order.getId().toString());
         ResponseEntity<String> re = new ResponseEntity<String>("penjual1", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
 
@@ -249,7 +246,7 @@ public class OrderServiceTest {
 
     @Test
     void testUpdateStatusInvalidOrderId(){
-        doReturn(null).when(orderRepository).findById("zczc");
+        doReturn(Optional.empty()).when(orderRepository).findById("zczc");
 
         ResponseEntity<String> re = new ResponseEntity<String>("penjual1", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
@@ -264,7 +261,7 @@ public class OrderServiceTest {
     @Test
     void testUpdateStatusInvalidUser(){
         Order order = orders.get(1);
-        doReturn(order).when(orderRepository).findById(order.getId().toString());
+        doReturn(Optional.of(order)).when(orderRepository).findById(order.getId().toString());
 
         ResponseEntity<String> re = new ResponseEntity<String>("p", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
@@ -279,15 +276,15 @@ public class OrderServiceTest {
     @Test
     void testFindByIdIfIdFound(){
         Order order = orders.get(1);
-        doReturn(order).when(orderRepository).findById(order.getId().toString());
+        doReturn(Optional.of(order)).when(orderRepository).findById(order.getId());
 
-        Order result = orderService.findById(order.getId().toString());
+        Order result = orderService.findById(order.getId());
         assertEquals(order.getId(), result.getId());
     }
 
     @Test
     void testFindByIdIfIdNotFound(){
-        doReturn(null).when(orderRepository).findById("zczc");
+        doReturn(Optional.empty()).when(orderRepository).findById("zczc");
 
         assertNull(orderService.findById("zczc"));
     }
@@ -295,7 +292,7 @@ public class OrderServiceTest {
     @Test
     void testFindAllByAuthorIfAuthorCorrect(){
         Order order = orders.get(1);
-        doReturn(orders).when(orderRepository).findAllByAuthor(order.getAuthorUsername());
+        doReturn(orders).when(orderRepository).findAllByAuthorUsername(order.getAuthorUsername());
 
         List<Order> results = orderService.findAllByAuthor(order.getAuthorUsername());
         for (Order result : results){
@@ -308,15 +305,15 @@ public class OrderServiceTest {
     void testFindAllByAuthorIfAllLowerCase(){
         Order order = orders.get(1);
         doReturn(orders.stream().filter(order1 -> {return order1.getAuthorUsername().equals(order.getAuthorUsername().toLowerCase());}).collect(Collectors.toList()))
-                .when(orderRepository).findAllByAuthor(order.getAuthorUsername().toLowerCase());
+                .when(orderRepository).findAllByAuthorUsername(order.getAuthorUsername().toLowerCase());
         List<Order> results = orderService.findAllByAuthor(order.getAuthorUsername().toLowerCase());
         assertTrue(results.isEmpty());
     }
 
     @Test
     void testFindAllWithSeller(){
-        doReturn(orderHasSeller("penjual1"))
-                .when(orderRepository).findAllWithSeller("penjual1");
+        doReturn(Optional.of(orderHasSeller("penjual1")))
+                .when(orderRepository).findAllByListings_SellerUsername("penjual1");
         List<Order> results = orderService.findAllWithSeller("penjual1");
         assertEquals(results, orders);
     }
@@ -331,7 +328,7 @@ public class OrderServiceTest {
                 .build();
 
         orderService.deleteAllWithListing(listing1);
-        verify(orderRepository,times(1)).deleteAllWithListing(listing1);
+        verify(orderRepository,times(1)).deleteOrdersByListings_Id(listing1.getId());
     }
 
     private HttpEntity<String> createHTTPHeader(){

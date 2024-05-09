@@ -53,7 +53,7 @@ public class OrderBuilder {
     }
 
     public OrderBuilder firstSetUp(){
-        currentOrder.setId(UUID.randomUUID());
+        currentOrder.setId(UUID.randomUUID().toString());
         LocalTime now = LocalTime.now();
         Time orderTime = Time.valueOf(now);
         long orderTimeL = orderTime.getTime();
