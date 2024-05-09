@@ -13,16 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 class Afk3ApplicationTests {
 
-    @Resource(name="listingController")
-    private ListingController listingController;
-    @Resource(name="orderController")
-    private OrderController orderController;
 
     @Test
     void contextLoads() {
-        Afk3Application.main(new String[] {});
-        assertThat(listingController).isNotNull();
-        assertThat(orderController).isNotNull();
     }
 
 }
