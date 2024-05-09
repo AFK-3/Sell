@@ -8,10 +8,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -56,12 +57,37 @@ public class ListingTest {
     void testSetListingIdWithNewId(){
         UUID id = UUID.randomUUID();
         listing = builder.reset().setCurrent(listing).addId(id).build();
-        assertEquals(id.toString(), listing.getId().toString());
+        assertEquals(id.toString(), listing.getId());
     }
 
     @Test
     void testSetListingIdWithNoId(){
         listing = builder.reset().addId().build();
         assertNotNull(listing.getId());
+    }
+
+    @Test
+    void testRemoveOrderAssociated(){
+        UUID id = UUID.randomUUID();
+        listing = builder.reset().setCurrent(listing).addId(id).build();
+        List<Listing> temp = new ArrayList<>();
+        temp.add(listing);
+        Order order = new Order();
+        order.setListings(temp);
+        listing.getOrders().add(order);
+        listing.removeOrderAssociations();
+        assertTrue(order.getListings().isEmpty());
+    }
+
+    @Test
+    void testSetOrders(){
+        UUID id = UUID.randomUUID();
+        assertTrue(listing.getOrders().isEmpty());
+        listing = builder.reset().setCurrent(listing).addId(id).build();
+        List<Order> temp = new ArrayList<>();
+        Order order = new Order();
+        temp.add(order);
+        listing.setOrders(temp);
+        assertFalse(listing.getOrders().isEmpty());
     }
 }

@@ -46,8 +46,8 @@ public class OrderTest {
     void testCreateOrderWithIDOnly(){
         Order order = new Order();
         UUID id = UUID.randomUUID();
-        order.setId(id);
-        assertEquals(id, order.getId());
+        order.setId(id.toString());
+        assertEquals(id.toString(), order.getId());
     }
 
     @Test

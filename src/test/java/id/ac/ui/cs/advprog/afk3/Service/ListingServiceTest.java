@@ -9,6 +9,7 @@ import id.ac.ui.cs.advprog.afk3.service.ListingServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.util.Optional;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,6 +35,9 @@ public class ListingServiceTest {
 
     @MockBean
     OrderRepository orderRepository;
+
+    @MockBean
+    ListingBuilder listingBuilder;
 
     @InjectMocks
     ListingServiceImpl service;
@@ -68,7 +73,7 @@ public class ListingServiceTest {
         Mockito.when(restTemplate.exchange(
                         "nulluser/get-role",HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
-        Mockito.when(listingRepository.createListing(listing)).thenReturn(createRepoMock(listing));
+        Mockito.when(listingRepository.save(listing)).thenReturn(createRepoMock(listing));
         service.create(listing, token);
 
         return listing;
@@ -109,7 +114,7 @@ public class ListingServiceTest {
     @Test
     void testCreateListingForSeller(){
         createAndSaveListing("2","12345678-1111-1111-1111-111111111111",1, UserType.SELLER.name(), "user");
-        when(listingRepository.findAll()).thenReturn(allListings.iterator());
+        when(listingRepository.findAll()).thenReturn(allListings);
         List<Listing> list = service.findAll();
 
         assertEquals("12345678-1111-1111-1111-111111111111", list.get(1).getId().toString());
@@ -120,7 +125,7 @@ public class ListingServiceTest {
     @Test
     void testCreateListingForBuyerSeller(){
         createAndSaveListing("2","12345678-1111-1111-1111-111111111111",1, UserType.BUYERSELLER.name(), "user");
-        when(listingRepository.findAll()).thenReturn(allListings.iterator());
+        when(listingRepository.findAll()).thenReturn(allListings);
         List<Listing> list = service.findAll();
 
         assertEquals("12345678-1111-1111-1111-111111111111", list.get(1).getId().toString());
@@ -131,7 +136,7 @@ public class ListingServiceTest {
     @Test
     void testCreateListingInvalidName(){
         createAndSaveListing("","12345678-1111-1111-1111-111111111111",1, UserType.SELLER.name(), "user");
-        when(listingRepository.findAll()).thenReturn(allListings.iterator());
+        when(listingRepository.findAll()).thenReturn(allListings);
         List<Listing> list = service.findAll();
 
         assertEquals(1,allListings.size());
@@ -140,7 +145,7 @@ public class ListingServiceTest {
     @Test
     void testCreateListingInvalidQuantity(){
         createAndSaveListing("2","12345678-1111-1111-1111-111111111111",0, UserType.SELLER.name(), "user");
-        when(listingRepository.findAll()).thenReturn(allListings.iterator());
+        when(listingRepository.findAll()).thenReturn(allListings);
         List<Listing> list = service.findAll();
 
         assertEquals(1,allListings.size());
@@ -149,7 +154,7 @@ public class ListingServiceTest {
     @Test
     void testFindAllListing(){
         createAndSaveListing("nomu","12345678-1111-1111-1111-111111111100",2, UserType.SELLER.name(), "user");
-        when(listingRepository.findAll()).thenReturn(allListings.iterator());
+        when(listingRepository.findAll()).thenReturn(allListings);
         List<Listing> list = service.findAll();
 
         assertEquals("eb558e9f-1c39-460e-8860-71af6af63bd6", list.getFirst().getId().toString());
@@ -178,11 +183,18 @@ public class ListingServiceTest {
         Mockito.when(restTemplate.exchange(
                         "nulluser/get-role",HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
-        Mockito.when(listingRepository.update(listing3.getId().toString(), listing3)).thenReturn(editRepoMock(listing3));
-        service.update(listing3.getId().toString(), listing3, token);
-        verify(listingRepository, times(1)).update(listing3.getId().toString(), listing3);
-        when(listingRepository.findById(listing2.getId().toString())).thenReturn(listing2);
-        Listing resultEdit = service.findById(listing2.getId().toString());
+        Optional<Listing> listingToEditOpt = Optional.of(listing2);
+        Mockito.when(listingRepository.findById(listing2.getId())).thenReturn(Optional.of(listing2));
+        Mockito.when(listingBuilder.reset()).thenReturn(listingBuilder);
+        Mockito.when(listingBuilder.setCurrent(listingToEditOpt.get())).thenReturn(listingBuilder);
+        Mockito.when(listingBuilder.addName(listing3.getName())).thenReturn(listingBuilder);
+        Mockito.when(listingBuilder.addQuantity(listing3.getQuantity())).thenReturn(listingBuilder);
+        Mockito.when(listingBuilder.addDescription(listing3.getDescription())).thenReturn(listingBuilder);
+        Mockito.when(listingBuilder.build()).thenReturn(editRepoMock(listing3));
+        service.update(listing2.getId(), listing3, token);
+        verify(listingRepository, times(1)).findById(listing3.getId());
+        when(listingRepository.findById(listing2.getId())).thenReturn(Optional.of(listing2));
+        Listing resultEdit = service.findById(listing2.getId());
 
         assertEquals("00558e9f-1c39-460e-8860-71af6af63bc7", resultEdit.getId().toString());
         assertEquals("nomu", resultEdit.getName());
@@ -203,9 +215,9 @@ public class ListingServiceTest {
         Mockito.when(restTemplate.exchange(
                         "nulluser/get-username",HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
-        when(listingRepository.update(listing3.getId().toString(), listing3)).thenReturn(editRepoMock(listing3));
-        service.update(listing3.getId().toString(), listing3, token);
-        when(listingRepository.findById(listing2.getId().toString())).thenReturn(listing3);
+        when(listingRepository.findById(listing3.getId())).thenReturn(Optional.of(listing3));
+        service.update(listing3.getId(), listing3, token);
+        when(listingRepository.findById(listing2.getId())).thenReturn(Optional.of(listing3));
         Listing resultEdit = service.findById(listing2.getId().toString());
 
         assertEquals("00558e9f-1c39-460e-8860-71af6af63bc7", resultEdit.getId().toString());
@@ -225,13 +237,13 @@ public class ListingServiceTest {
         Mockito.when(restTemplate.exchange(
                         "nulluser/get-username",HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
-        when(listingRepository.findById(listing2.getId().toString())).thenReturn(listing2);
+        when(listingRepository.findById(listing2.getId())).thenReturn(Optional.of(listing2));
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
         allListings.remove(listing2); // assume listingRepo deletes id
 
-        when(listingRepository.findAll()).thenReturn(allListings.iterator());
+        when(listingRepository.findAll()).thenReturn(allListings);
         List<Listing> list = service.findAll();
-        verify(listingRepository, times(1)).delete(listing2.getId().toString());
+        verify(listingRepository, times(1)).deleteById(listing2.getId());
         assertEquals(1,list.size());
     }
 
@@ -246,7 +258,7 @@ public class ListingServiceTest {
                         "nulluser/get-username",HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
         service.deleteListingById("id", token);
-        verify(listingRepository, times(0)).delete("id");
+        verify(listingRepository, times(0)).deleteById("id");
     }
 
     @Test
@@ -262,7 +274,7 @@ public class ListingServiceTest {
                         "nulluser/get-username",HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
-        verify(listingRepository, times(0)).delete("00558e9f-1c39-460e-8860-71af6af63bc7");
+        verify(listingRepository, times(0)).deleteById("00558e9f-1c39-460e-8860-71af6af63bc7");
     }
     @Test
     void testDeleteListingNullUser(){
@@ -277,7 +289,7 @@ public class ListingServiceTest {
                         "nulluser/get-username",HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
-        verify(listingRepository, times(0)).delete("00558e9f-1c39-460e-8860-71af6af63bc7");
+        verify(listingRepository, times(0)).deleteById("00558e9f-1c39-460e-8860-71af6af63bc7");
     }
 
     @Test
@@ -290,10 +302,10 @@ public class ListingServiceTest {
         Mockito.when(restTemplate.exchange(
                         "nulluser/get-username",HttpMethod.GET, entity,String.class))
                 .thenReturn(re);
-        when(listingRepository.findBySellerId("user")).thenReturn(
+        when(listingRepository.findAllBySellerUsername("user")).thenReturn(Optional.of(
                 allListings.stream().filter(
                         listing -> {return listing.getSellerUsername().equals("user");}).collect(Collectors.toList())
-                );
+                ));
         List<Listing> result = service.findAllBySellerId(token);
         assertFalse(result.isEmpty());
     }
@@ -310,6 +322,15 @@ public class ListingServiceTest {
                 .thenReturn(re);
         List<Listing> result = service.findAllBySellerId(token);
         assertNull(null);
+    }
+
+    @Test
+    void testDeleteOrderAndPaymentWithListing(){
+        Listing listing2 = createAndSaveListing("aa", "00558e9f-1c39-460e-8860-71af6af63bc7",20, UserType.SELLER.name(), "user");
+        when(listingRepository.findById("00558e9f-1c39-460e-8860-71af6af63bc7")).thenReturn(Optional.of(listing2));
+        CompletableFuture<Boolean> result = service.deleteOrderAndPaymentWithListing("00558e9f-1c39-460e-8860-71af6af63bc7", token);
+        CompletableFuture.allOf(result).join();
+        verify(orderRepository, timeout(100)).deleteOrdersByListings_Id("00558e9f-1c39-460e-8860-71af6af63bc7");
     }
 }
 
