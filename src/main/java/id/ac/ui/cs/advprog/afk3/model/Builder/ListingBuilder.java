@@ -34,12 +34,12 @@ public class ListingBuilder {
     }
 
     public ListingBuilder addId(){
-        currentListing.setId(UUID.randomUUID());
+        currentListing.setId(UUID.randomUUID().toString());
         return this;
     }
 
     public ListingBuilder addId(UUID id){
-        currentListing.setId(id);
+        currentListing.setId(id.toString());
         return this;
     }
 

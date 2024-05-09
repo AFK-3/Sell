@@ -44,7 +44,7 @@ public class OrderController {
     public ResponseEntity<Order> createOrderPagePost(@RequestBody Order order, @RequestHeader("Authorization") String token){
         System.out.println(order);
         for (Listing listing : order.getListings()){
-            Listing temp = listingService.findById(listing.getId().toString());
+            Listing temp = listingService.findById(listing.getId());
             listing.setSellerUsername(temp.getSellerUsername());
         }
         Order order1 = orderService.createOrder(order, token);

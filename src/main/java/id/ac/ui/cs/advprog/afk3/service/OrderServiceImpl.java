@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService{
@@ -50,12 +51,10 @@ public class OrderServiceImpl implements OrderService{
             // Kalo udah habis / melebihi stok, otomatis batal
             List<Listing> outOfStock = new ArrayList<>();
             for (Listing listing : order.getListings()){
-                Listing exist = listingRepository.findById(listing.getId().toString());
-                if (exist.getQuantity()-listing.getQuantity()>=0) {
-                    exist.setQuantity(exist.getQuantity() - listing.getQuantity());
-                }else{
-                    outOfStock.add(exist);
-                }
+                Optional<Listing> exist = listingRepository.findById(listing.getId());
+                if (exist.isPresent() && exist.get().getQuantity()-listing.getQuantity()>=0) {
+                    exist.get().setQuantity(exist.get().getQuantity() - listing.getQuantity());
+                }else exist.ifPresent(outOfStock::add);
             }
             for (Listing l: outOfStock){
                 for (int i=0; i<order.getListings().size(); i++){
@@ -106,22 +105,24 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public Order findById(String orderId){
-        return orderRepository.findById(orderId);
+        Optional<Order> order = orderRepository.findById(orderId);
+        return order.orElse(null);
     }
 
     @Override
     public List<Order> findAllByAuthor(String authorUsername){
-        return orderRepository.findAllByAuthor(authorUsername);
+        return orderRepository.findAllByAuthorUsername(authorUsername);
     }
 
     @Override
     public List<Order> findAllWithSeller(String username) {
-        return orderRepository.findAllWithSeller(username);
+        Optional<List<Order>> result = orderRepository.findAllByListings_SellerUsername(username);
+        return result.orElse(null);
     }
 
     @Override
     public void deleteAllWithListing(Listing listing) {
-        orderRepository.deleteAllWithListing(listing);
+        orderRepository.deleteOrdersByListings_Id(listing.getId());
     }
 
     private boolean isUserBuyer(String role){
