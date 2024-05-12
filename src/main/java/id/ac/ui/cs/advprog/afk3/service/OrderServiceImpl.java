@@ -115,8 +115,14 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public List<Order> findAllWithSeller(String username) {
-        Optional<List<Order>> result = orderRepository.findAllByListings_SellerUsername(username);
+    public List<Order> findAllWithSeller(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+        ResponseEntity<String> loggedin = restTemplate.exchange(authUrl+"/user/get-username", HttpMethod.GET,entity ,String.class);
+
+        String sellerUsername = loggedin.getBody();
+        Optional<List<Order>> result = orderRepository.findAllByListings_SellerUsername(sellerUsername);
         return result.orElse(null);
     }
 
