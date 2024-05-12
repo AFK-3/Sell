@@ -316,9 +316,16 @@ public class OrderServiceTest {
 
     @Test
     void testFindAllWithSeller(){
+        ResponseEntity<String> re = new ResponseEntity<String>("penjual1", HttpStatus.OK);
+        HttpEntity<String> entity = createHTTPHeader();
+
+        Mockito.when(restTemplate.exchange(
+                        "null/user/get-username", HttpMethod.GET, entity,String.class))
+                .thenReturn(re);
+
         doReturn(Optional.of(orderHasSeller("penjual1")))
                 .when(orderRepository).findAllByListings_SellerUsername("penjual1");
-        List<Order> results = orderService.findAllWithSeller("penjual1");
+        List<Order> results = orderService.findAllWithSeller(token);
         assertEquals(results, orders);
     }
 

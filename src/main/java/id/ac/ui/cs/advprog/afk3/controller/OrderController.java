@@ -52,24 +52,16 @@ public class OrderController {
         return new ResponseEntity<>(order1, HttpStatus.CREATED);
     }
 
-    @GetMapping("/to-seller")
-    public String getOrderToSeller(Model model){
-        model.addAttribute("owner", new Order());
-        return "orderGetToSeller";
-    }
-
     @PostMapping("/to-seller")
-    public ResponseEntity<List> postOrderToSeller(@ModelAttribute("owner") Order order, Model model){
-        String authorUsername = order.getAuthorUsername();
-        System.out.println("zczcz"+orderService.findAllWithSeller(authorUsername));
-        List<Order> orderList = orderService.findAllWithSeller(authorUsername);
+    public ResponseEntity<List> postOrderToSeller(Model model,@RequestHeader("Authorization") String token){
+        List<Order> orderList = orderService.findAllWithSeller(token);
         return new ResponseEntity<>(orderList, HttpStatus.OK);
     }
+
     @PostMapping("/set-status/{id}")
     public ResponseEntity<Order> postSetStatusById(@PathVariable("id")String orderId, @ModelAttribute("status") String status,@RequestHeader("Authorization") String token){
         System.out.println("/order/set-status"+orderId+" "+status);
         Order order = orderService.updateStatus(orderId, status, token);
-        System.out.println(orderService.findById(orderId).getStatus());
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 

@@ -62,7 +62,7 @@ public class ListingController {
     }
 
     @GetMapping("/get-by-id/{listingId}")
-    public ResponseEntity<Listing> getById(Model model, @RequestParam("listingId") String listingId, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<Listing> getById(Model model, @PathVariable("listingId") String listingId, @RequestHeader("Authorization") String token) {
         Listing foundListing = listingService.findById(listingId);
         if (foundListing==null){
             return new ResponseEntity<Listing>(foundListing, HttpStatus.NOT_FOUND);
