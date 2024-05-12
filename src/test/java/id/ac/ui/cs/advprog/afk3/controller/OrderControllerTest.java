@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import id.ac.ui.cs.advprog.afk3.service.ListingService;
 
@@ -30,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(controllers = OrderController.class)
+@ActiveProfiles("test")
 public class OrderControllerTest {
     @Autowired
     private MockMvc mvc;
