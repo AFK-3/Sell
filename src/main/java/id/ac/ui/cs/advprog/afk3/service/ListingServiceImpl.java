@@ -1,12 +1,14 @@
 package id.ac.ui.cs.advprog.afk3.service;
 
 
+import id.ac.ui.cs.advprog.afk3.Security.JwtValidator;
 import id.ac.ui.cs.advprog.afk3.model.Builder.ListingBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.model.Order;
 import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -21,6 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
+@Slf4j
 @Service
 public class ListingServiceImpl implements  ListingService{
     @Autowired
@@ -35,6 +38,9 @@ public class ListingServiceImpl implements  ListingService{
     @Value("${app.auth-domain}")
     String authUrl;
 
+    @Autowired
+    JwtValidator validator;
+
     RestTemplate restTemplate = new RestTemplate();
 
     @Override
@@ -44,12 +50,14 @@ public class ListingServiceImpl implements  ListingService{
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
-        ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
+        String owner = validator.getUsernameFromJWT(token);
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
         System.out.println("zczc"+owner+" "+role);
-        if (owner.getBody()!=null && fieldValid(listing) && owner.getBody().equals(listing.getSellerUsername()) && isSeller(role.getBody())){
+        if (owner!=null && fieldValid(listing) && owner.equals(listing.getSellerUsername()) && isSeller(role.getBody())){
+            log.info("listing {} saved SUCCESS",listing.getId());
             listing = listingRepository.save(listing);
         }
+        log.info("listing {} saved FAILED",listing.getId());
         return listing;
     }
 
@@ -64,20 +72,25 @@ public class ListingServiceImpl implements  ListingService{
 
     @Override
     public List<Listing> findAllBySellerId(String token) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", token);
-        HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
-        ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
-        if (owner.getBody()!=null){
-            return listingRepository.findAllBySellerUsername(owner.getBody()).get();
+        String owner = validator.getUsernameFromJWT(token);
+        if (owner!=null){
+            log.info("Find listings by username {} SUCCESSFUL", owner);
+            return listingRepository.findAllBySellerUsername(owner).get();
         }
+        log.error("Find listings by username FAILED, INVALID Token");
         return null;
     }
 
     @Override
     public Listing findById(String listingId){
-        return listingRepository.findById(listingId).get();
+        Optional<Listing> listing = listingRepository.findById(listingId);
+        if (listing.isPresent()){
+            log.info("Find listings by id {} SUCCESSFUL", listingId);
+            return listing.get();
+        }
+        log.error("Find listings by id {} FAILED, id not found", listingId);
+        return null;
     }
 
     @Override
@@ -86,12 +99,13 @@ public class ListingServiceImpl implements  ListingService{
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
-        ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
+        String owner = validator.getUsernameFromJWT(token);
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
 
-        if (owner.getBody()!=null && owner.getBody().equals(listing.getSellerUsername()) && isSeller(role.getBody())){
+        if (owner!=null && owner.equals(listing.getSellerUsername()) && isSeller(role.getBody())){
             Optional<Listing> toBeUpdated = listingRepository.findById(listingId);
             if (toBeUpdated.isPresent()){
+                log.info("Update listing by id {} SUCCESSFUL", listingId);
                 return builder.reset().setCurrent(toBeUpdated.get())
                         .addName(listing.getName())
                         .addQuantity(listing.getQuantity())
@@ -99,22 +113,33 @@ public class ListingServiceImpl implements  ListingService{
                         .build();
             }
         }
+        log.error("Update listing by id {} FAILED", listingId);
         return null;
     }
 
     @Override
     public boolean deleteListingById(String listingId, String token) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", token);
-        HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
-        ResponseEntity<String > owner = restTemplate.exchange(authUrl+"user/get-username", HttpMethod.GET,entity ,String.class);
+        String owner = validator.getUsernameFromJWT(token);
         Optional<Listing> listing = listingRepository.findById(listingId);
-        if (listing.isPresent() && owner.getBody()!=null && owner.getBody().equals(listing.get().getSellerUsername())){
+        if (listing.isPresent() && owner!=null && owner.equals(listing.get().getSellerUsername())){
+            log.info("Delete listing by id {} SUCCESSFUL", listingId);
             listingRepository.deleteById(listingId);
             return true;
         }
+        log.error("Delete listing by id {} FAILED", listingId);
         return false;
+    }
+
+    @Override
+    public List<Listing> findAll(String token) {
+        String owner = validator.getUsernameFromJWT(token);
+
+        if (owner!=null){
+            return listingRepository.findAll();
+        }
+        log.error("FindAll listing not allowed");
+        return null;
     }
 
     @Override
@@ -139,7 +164,6 @@ public class ListingServiceImpl implements  ListingService{
 
     public void deleteOrderWithListing(Listing listing){
         Optional<List<Order>> result = orderRepository.deleteOrdersByListings_Id(listing.getId());
-        return;
     }
 
     private boolean isSeller(String role){

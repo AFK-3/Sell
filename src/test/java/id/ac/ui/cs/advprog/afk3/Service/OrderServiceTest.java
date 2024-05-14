@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.afk3.Service;
 
+import id.ac.ui.cs.advprog.afk3.Security.JwtValidator;
 import id.ac.ui.cs.advprog.afk3.model.Builder.ListingBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Builder.OrderBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.OrderStatus;
@@ -36,6 +37,9 @@ public class OrderServiceTest {
     OrderRepository orderRepository;
     @Mock
     ListingRepository listingRepository;
+
+    @Mock
+    JwtValidator validator;
     List<Order> orders;
 
     private OrderBuilder builder = new OrderBuilder();
@@ -92,9 +96,7 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.exchange(
                         "null/user/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         doReturn(order).when(orderRepository).save(order);
         when(listingRepository.findById(order.getListings().getFirst().getId())).thenReturn(Optional.of(order.getListings().getFirst()));
         Order result  = orderService.createOrder(order, token);
@@ -112,9 +114,7 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.exchange(
                         "null/user/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         doReturn(order).when(orderRepository).save(order);
         when(listingRepository.findById(order.getListings().getFirst().getId())).thenReturn(Optional.of(order.getListings().getFirst()));
         Order result  = orderService.createOrder(order, token);
@@ -132,9 +132,7 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.exchange(
                         "null/user/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(null);
         assertNull(orderService.createOrder(order, token));
         verify(orderRepository, times(0)).save(order);
     }
@@ -149,9 +147,7 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.exchange(
                         "null/user/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         assertNull(orderService.createOrder(order, token));
         verify(orderRepository, times(0)).save(order);
     }
@@ -166,9 +162,7 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.exchange(
                         "null/user/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(null);
         assertNull(orderService.createOrder(order, token));
         verify(orderRepository, times(0)).save(order);
     }
@@ -188,9 +182,7 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.exchange(
                         "null/user/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         when(listingRepository.findById(order.getListings().getFirst().getId().toString())).thenReturn(Optional.of(listingExist));
         assertThrows(IllegalArgumentException.class,()->{orderService.createOrder(order, token);});
     }
@@ -206,9 +198,7 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.exchange(
                         "null/user/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         assertThrows(IllegalArgumentException.class,()->{orderService.createOrder(order, token);});
     }
 
@@ -222,9 +212,7 @@ public class OrderServiceTest {
         ResponseEntity<String> re = new ResponseEntity<String>("penjual1", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
 
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         doReturn(Optional.of(order)).when(orderRepository).findById(order.getId().toString());
         doReturn(newOrder).when(orderRepository).save(any(Order.class));
         Order result = orderService.updateStatus(order.getId(), OrderStatus.SUCCESS.name(), token);
@@ -241,9 +229,7 @@ public class OrderServiceTest {
         ResponseEntity<String> re = new ResponseEntity<String>("penjual1", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
 
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         assertThrows(IllegalArgumentException.class, ()->orderService.updateStatus(order.getId().toString(), "MEOW", token));
         verify(orderRepository, times(0)).save(any(Order.class));
     }
@@ -255,9 +241,7 @@ public class OrderServiceTest {
         ResponseEntity<String> re = new ResponseEntity<String>("penjual1", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
 
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         assertThrows(NoSuchElementException.class, ()->orderService.updateStatus("zczc", OrderStatus.SUCCESS.name(), token));
         verify(orderRepository, times(0)).save(any(Order.class));
     }
@@ -270,10 +254,8 @@ public class OrderServiceTest {
         ResponseEntity<String> re = new ResponseEntity<String>("p", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
 
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
-        assertThrows(NoSuchElementException.class, ()->orderService.updateStatus(order.getId().toString(), OrderStatus.SUCCESS.name(), token));
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
+        assertNull(orderService.updateStatus(order.getId(), OrderStatus.SUCCESS.name(), token));
         verify(orderRepository, times(0)).save(any(Order.class));
     }
 
@@ -319,9 +301,7 @@ public class OrderServiceTest {
         ResponseEntity<String> re = new ResponseEntity<String>("penjual1", HttpStatus.OK);
         HttpEntity<String> entity = createHTTPHeader();
 
-        Mockito.when(restTemplate.exchange(
-                        "null/user/get-username", HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
 
         doReturn(Optional.of(orderHasSeller("penjual1")))
                 .when(orderRepository).findAllByListings_SellerUsername("penjual1");

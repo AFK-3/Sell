@@ -70,6 +70,15 @@ public class ListingController {
         return new ResponseEntity<Listing>(foundListing, HttpStatus.FOUND);
     }
 
+    @GetMapping("/get-all/")
+    public ResponseEntity<List<Listing>> getAll(Model model, @RequestHeader("Authorization") String token) {
+        List<Listing> foundListing = listingService.findAll(token);
+        if (foundListing==null){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(foundListing, HttpStatus.FOUND);
+    }
+
     @GetMapping("/get-by-seller/")
     public ResponseEntity<List<Listing>> getBySellerId(Model model, @RequestHeader("Authorization") String token) {
         List<Listing> foundListing = listingService.findAllBySellerId(token);
