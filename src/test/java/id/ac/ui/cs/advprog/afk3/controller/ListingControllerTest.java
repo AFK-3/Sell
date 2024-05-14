@@ -236,4 +236,19 @@ public class ListingControllerTest {
         assertFalse(content.contains("name"));
         assertFalse(content.contains("quantity"));
     }
+
+    @Test
+    public void testGetAll() throws Exception{
+        createAndSaveListing();
+        when(listingService.findAll(token)).thenReturn(allListings);
+        MvcResult result = mvc.perform(get("/listing/get-all/")
+                        .header("Authorization", token))
+                .andExpect(status().isFound()).andReturn();
+
+        String content = result.getResponse().getContentAsString();
+
+        assertTrue(content.contains("id"));
+        assertTrue(content.contains("name"));
+        assertTrue(content.contains("quantity"));
+    }
 }

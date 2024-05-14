@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.afk3.Service;
 
+import id.ac.ui.cs.advprog.afk3.Security.JwtValidator;
 import id.ac.ui.cs.advprog.afk3.model.Builder.ListingBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
@@ -47,6 +48,8 @@ public class ListingServiceTest {
     final String token = "a";
 
     private List<Listing> allListings;
+    @Mock
+    private JwtValidator validator;
 
     @Mock
     private RestTemplate restTemplate;
@@ -69,9 +72,7 @@ public class ListingServiceTest {
         for (Listing l : allListings){
             System.out.println(l.getName());
         }
-        Mockito.when(restTemplate.exchange(
-                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(username);
         Mockito.when(restTemplate.exchange(
                         "nulluser/get-role",HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
@@ -179,9 +180,7 @@ public class ListingServiceTest {
 
         ResponseEntity<String> re = new ResponseEntity<String>("user", HttpStatus.OK);
         ResponseEntity<String> re2 = new ResponseEntity<String>("SELLER", HttpStatus.OK);
-        Mockito.when(restTemplate.exchange(
-                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user");
         Mockito.when(restTemplate.exchange(
                         "nulluser/get-role",HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
@@ -214,9 +213,8 @@ public class ListingServiceTest {
 
         ResponseEntity<String> re = new ResponseEntity<String>("user", HttpStatus.OK);
         ResponseEntity<String> re2 = new ResponseEntity<String>("BUYERSELLER", HttpStatus.OK);
-        Mockito.when(restTemplate.exchange(
-                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user");
         when(listingRepository.findById(listing3.getId())).thenReturn(Optional.of(listing3));
         service.update(listing3.getId(), listing3, token);
         when(listingRepository.findById(listing2.getId())).thenReturn(Optional.of(listing3));
@@ -236,9 +234,8 @@ public class ListingServiceTest {
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         ResponseEntity<String> re = new ResponseEntity<String>("user", HttpStatus.OK);
-        Mockito.when(restTemplate.exchange(
-                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user");
         when(listingRepository.findById(listing2.getId())).thenReturn(Optional.of(listing2));
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
         allListings.remove(listing2); // assume listingRepo deletes id
@@ -256,9 +253,8 @@ public class ListingServiceTest {
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         ResponseEntity<String> re = new ResponseEntity<String>("user", HttpStatus.OK);
-        Mockito.when(restTemplate.exchange(
-                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user");
         service.deleteListingById("id", token);
         verify(listingRepository, times(0)).deleteById("id");
     }
@@ -272,9 +268,8 @@ public class ListingServiceTest {
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         ResponseEntity<String> re = new ResponseEntity<String>("user1", HttpStatus.OK);
-        Mockito.when(restTemplate.exchange(
-                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user1");
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
         verify(listingRepository, times(0)).deleteById("00558e9f-1c39-460e-8860-71af6af63bc7");
     }
@@ -287,9 +282,8 @@ public class ListingServiceTest {
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         ResponseEntity re = new ResponseEntity(null, HttpStatus.OK);
-        Mockito.when(restTemplate.exchange(
-                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(null);
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
         verify(listingRepository, times(0)).deleteById("00558e9f-1c39-460e-8860-71af6af63bc7");
     }
@@ -301,9 +295,8 @@ public class ListingServiceTest {
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         ResponseEntity<String> re = new ResponseEntity<String>("user", HttpStatus.OK);
-        Mockito.when(restTemplate.exchange(
-                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user");
         when(listingRepository.findAllBySellerUsername("user")).thenReturn(Optional.of(
                 allListings.stream().filter(
                         listing -> {return listing.getSellerUsername().equals("user");}).collect(Collectors.toList())
@@ -319,9 +312,8 @@ public class ListingServiceTest {
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         ResponseEntity re = new ResponseEntity(null, HttpStatus.OK);
-        Mockito.when(restTemplate.exchange(
-                        "nulluser/get-username",HttpMethod.GET, entity,String.class))
-                .thenReturn(re);
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(null);
         List<Listing> result = service.findAllBySellerId(token);
         assertNull(null);
     }
@@ -333,6 +325,40 @@ public class ListingServiceTest {
         CompletableFuture<Boolean> result = service.deleteOrderAndPaymentWithListing("00558e9f-1c39-460e-8860-71af6af63bc7", token);
         CompletableFuture.allOf(result).join();
         verify(orderRepository, timeout(100)).deleteOrdersByListings_Id("00558e9f-1c39-460e-8860-71af6af63bc7");
+    }
+
+    @Test
+    void testFindByIdNotFound(){
+        when(listingRepository.findById("00558e9f-1c39-460e-8860-71af6af63bc9")).thenReturn(null);
+        assertNull(service.findById("00558e9f-1c39-460e-8860-71af6af63bc8"));
+    }
+
+    @Test
+    void testFindById(){
+        Listing listing2 = createAndSaveListing("aa", "00558e9f-1c39-460e-8860-71af6af63bc7",20, UserType.SELLER.name(), "user");
+        when(listingRepository.findById("00558e9f-1c39-460e-8860-71af6af63bc7")).thenReturn(Optional.of(listing2));
+        Listing result = service.findById("00558e9f-1c39-460e-8860-71af6af63bc7");
+        assertNotNull(result);
+        assertEquals("00558e9f-1c39-460e-8860-71af6af63bc7", result.getId());
+        assertEquals("user", result.getSellerUsername());
+        assertEquals(20, result.getQuantity());
+    }
+
+    @Test
+    void testFindAll(){
+        Listing listing2 = createAndSaveListing("aa", "00558e9f-1c39-460e-8860-71af6af63bc7",20, UserType.SELLER.name(), "user");
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user");
+        when(listingRepository.findAll()).thenReturn(allListings);
+        List<Listing> result = service.findAll(token);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testFindAllNotValidJWT(){
+        Listing listing2 = createAndSaveListing("aa", "00558e9f-1c39-460e-8860-71af6af63bc7",20, UserType.SELLER.name(), "user");
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(null);
+        List<Listing> result = service.findAll(token);
+        assertNull(result);
     }
 }
 
