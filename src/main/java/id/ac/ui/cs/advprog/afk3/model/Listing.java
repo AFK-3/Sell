@@ -23,6 +23,7 @@ public class Listing {
     private String name;
     private String description;
     private int quantity;
+    private int price;
 
     @ManyToMany(mappedBy = "listings")
     private List<Order> orders = new ArrayList<>();
