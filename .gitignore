@@ -5,6 +5,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 src/main/java/id/ac/ui/cs/advprog/afk3/DataLoader.java
+AFK3.log
+AFK3.log.*
 
 ### STS ###
 .apt_generated
