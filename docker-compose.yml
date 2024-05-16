@@ -1,9 +1,9 @@
 name: afk3
 
 services:
-  rasukan:
+  afk3:
     image: ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG}
-    container_name: afk3
+    container_name: sell
     ports:
       - "80:8080"
 
