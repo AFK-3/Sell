@@ -111,6 +111,15 @@ jobs:
 
       - name: update permission
         run: chmod 400 ssh-key.pem
+
+      - name: Create env file
+        run: |
+          cat << EOF > .env
+          REGISTRY_USER=${{ secrets.REGISTRY_USER }}
+          IMAGE_NAME=${{ secrets.IMAGE_NAME }}
+          IMAGE_TAG=${{ secrets.IMAGE_TAG }}
+          EOF
+
       - name: Deploy to GCP
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.GCP_USERNAME }}@${{ secrets.GCP_STATIC_IP }} "
