@@ -122,6 +122,7 @@ jobs:
 
       - name: Deploy to GCP
         run: |
+          scp -o StrictHostKeyChecking=no -i ssh-key.pem -r ./.env ./docker-compose.yml ./monitoring ${{ secrets.GCP_USERNAME }}@${{ secrets.GCP_STATIC_IP }}:~/
           ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.GCP_USERNAME }}@${{ secrets.GCP_STATIC_IP }} "
             sudo docker container rm -f ${{ secrets.CONTAINER_NAME }} || true &&
             sudo docker image rm -f ${{ secrets.REGISTRY_USER }}/${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }} || true &&
