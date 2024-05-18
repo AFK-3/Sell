@@ -409,3 +409,6 @@ Consider defining a bean of type 'id.ac.ui.cs.advprog.afk3.service.OrderService'
 2024-05-18T23:28:08.963+07:00  INFO 16292 --- [AFK3] [http-nio-8081-exec-1] i.a.u.c.a.a.service.ListingServiceImpl   : hitting url http://localhost:8080/user/get-role
 2024-05-18T23:28:09.030+07:00  INFO 16292 --- [AFK3] [http-nio-8081-exec-1] i.a.u.c.a.a.service.ListingServiceImpl   : listing null saved SUCCESS
 2024-05-18T23:28:09.157+07:00  INFO 16292 --- [AFK3] [http-nio-8081-exec-1] i.a.u.c.a.a.service.ListingServiceImpl   : listing 8a4f344a-03f7-44cb-9d0c-e0e63644038f saved FAILED
+2024-05-18T23:36:05.042+07:00  INFO 16292 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-18T23:36:05.046+07:00  INFO 16292 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-05-18T23:36:05.049+07:00  INFO 16292 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
