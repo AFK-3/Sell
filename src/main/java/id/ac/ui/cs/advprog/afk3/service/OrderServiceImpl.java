@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService{
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
-        ResponseEntity<String> authorData = restTemplate.exchange(authUrl+"/user/get-role", HttpMethod.GET,entity ,String.class);
+        ResponseEntity<String> authorData = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
         String owner = validator.getUsernameFromJWT(token);
 
         System.out.println(order.getId()+" "+authorData.getBody()+" "+owner);
