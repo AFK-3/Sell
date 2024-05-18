@@ -1,9 +1,14 @@
 ### Sell
 #### Proof of Monitoring
+Proof of monitoring online :
+![image](https://github.com/AFK-3/Sell/assets/119410845/d443ab84-657b-4e58-b45e-158192650cb5)
+
 Result dari /actuator/prometheus pada lokal
 ![image](https://github.com/AFK-3/Sell/assets/119410845/2ebad7f0-3a7d-4aab-bc95-346b26a20ec4)
+
 Dashboard Grafana pada lokal
 ![image](https://github.com/AFK-3/Sell/assets/119410845/adae9a85-1da0-4634-aefe-bc81374894a8)
+
 Prometheus pada lokal
 ![image](https://github.com/AFK-3/Sell/assets/119410845/3fda360d-d1a1-4cb1-91a3-c613f98e5ccb)
 
