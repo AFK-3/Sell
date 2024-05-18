@@ -80,7 +80,7 @@ public class ListingController {
         return new ResponseEntity<>(foundListing, HttpStatus.FOUND);
     }
 
-    @GetMapping("/get-by-seller/")
+    @GetMapping("/get-by-seller")
     public ResponseEntity<List<Listing>> getBySellerId(Model model, @RequestHeader("Authorization") String token) {
         List<Listing> foundListing = listingService.findAllBySellerId(token);
         if (foundListing==null){
