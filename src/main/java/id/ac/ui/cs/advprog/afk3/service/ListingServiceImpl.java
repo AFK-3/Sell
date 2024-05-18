@@ -51,6 +51,7 @@ public class ListingServiceImpl implements  ListingService{
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         String owner = validator.getUsernameFromJWT(token);
+        log.info("hitting url "+authUrl+"user/get-role");
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
         System.out.println("zczc"+owner+" "+role);
         if (owner!=null && fieldValid(listing) && owner.equals(listing.getSellerUsername()) && isSeller(role.getBody())){
@@ -100,6 +101,7 @@ public class ListingServiceImpl implements  ListingService{
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         String owner = validator.getUsernameFromJWT(token);
+        log.info("hitting url "+authUrl+"user/get-role");
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
 
         if (owner!=null && owner.equals(listing.getSellerUsername()) && isSeller(role.getBody())){
