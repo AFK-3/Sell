@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/listing")
 public class ListingController {
