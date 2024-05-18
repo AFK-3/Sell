@@ -213,7 +213,7 @@ public class ListingControllerTest {
     public void testGetBySeller() throws Exception{
         Listing listing = createAndSaveListing();
         when(listingService.findAllBySellerId(token)).thenReturn(allListings);
-        MvcResult result = mvc.perform(get("/listing/get-by-seller/")
+        MvcResult result = mvc.perform(get("/listing/get-by-seller")
                         .header("Authorization", token))
                 .andExpect(status().isFound()).andReturn();
 

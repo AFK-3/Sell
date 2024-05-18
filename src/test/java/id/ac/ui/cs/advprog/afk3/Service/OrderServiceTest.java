@@ -94,7 +94,7 @@ public class OrderServiceTest {
         HttpEntity<String> entity = createHTTPHeader();
 
         Mockito.when(restTemplate.exchange(
-                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                        "nulluser/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         doReturn(order).when(orderRepository).save(order);
@@ -112,7 +112,7 @@ public class OrderServiceTest {
         HttpEntity<String> entity = createHTTPHeader();
 
         Mockito.when(restTemplate.exchange(
-                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                        "nulluser/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         doReturn(order).when(orderRepository).save(order);
@@ -130,7 +130,7 @@ public class OrderServiceTest {
         HttpEntity<String> entity = createHTTPHeader();
 
         Mockito.when(restTemplate.exchange(
-                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                        "nulluser/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(null);
         assertNull(orderService.createOrder(order, token));
@@ -145,7 +145,7 @@ public class OrderServiceTest {
         HttpEntity<String> entity = createHTTPHeader();
 
         Mockito.when(restTemplate.exchange(
-                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                        "nulluser/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         assertNull(orderService.createOrder(order, token));
@@ -160,7 +160,7 @@ public class OrderServiceTest {
         HttpEntity<String> entity = createHTTPHeader();
 
         Mockito.when(restTemplate.exchange(
-                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                        "nulluser/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(null);
         assertNull(orderService.createOrder(order, token));
@@ -180,7 +180,7 @@ public class OrderServiceTest {
                 .build();
 
         Mockito.when(restTemplate.exchange(
-                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                        "nulluser/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         when(listingRepository.findById(order.getListings().getFirst().getId().toString())).thenReturn(Optional.of(listingExist));
@@ -196,7 +196,7 @@ public class OrderServiceTest {
         HttpEntity<String> entity = createHTTPHeader();
 
         Mockito.when(restTemplate.exchange(
-                        "null/user/get-role", HttpMethod.GET, entity,String.class))
+                        "nulluser/get-role", HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
         assertThrows(IllegalArgumentException.class,()->{orderService.createOrder(order, token);});
