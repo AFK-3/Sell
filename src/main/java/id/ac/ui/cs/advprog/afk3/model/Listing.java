@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.aspectj.weaver.ast.Or;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter @Setter
 @Entity
@@ -23,6 +25,8 @@ public class Listing {
     private String name;
     private String description;
     private int quantity;
+
+    @ColumnDefault("10000")
     private int price;
 
     @ManyToMany(mappedBy = "listings")
