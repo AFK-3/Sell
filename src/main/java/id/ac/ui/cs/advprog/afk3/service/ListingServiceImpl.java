@@ -16,8 +16,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -54,11 +52,17 @@ public class ListingServiceImpl implements  ListingService{
         log.info("hitting url "+authUrl+"user/get-role");
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
         System.out.println("zczc"+owner+" "+role);
-        if (owner!=null && fieldValid(listing) && owner.equals(listing.getSellerUsername()) && isSeller(role.getBody())){
+        System.out.println(owner!=null);
+        System.out.println(fieldValid(listing));
+        System.out.println(isSeller(role.getBody()));
+        if (owner!=null && fieldValid(listing) && isSeller(role.getBody())){
+            listing = builder.setCurrent(listing).addSellerUsername(owner).addId().build();
             log.info("listing {} saved SUCCESS",listing.getId());
             listing = listingRepository.save(listing);
+
+        }else{
+            log.info("listing {} saved FAILED",listing.getId());
         }
-        log.info("listing {} saved FAILED",listing.getId());
         return listing;
     }
 
@@ -77,7 +81,10 @@ public class ListingServiceImpl implements  ListingService{
         String owner = validator.getUsernameFromJWT(token);
         if (owner!=null){
             log.info("Find listings by username {} SUCCESSFUL", owner);
-            return listingRepository.findAllBySellerUsername(owner).get();
+            Optional<List<Listing>> res =  listingRepository.findAllBySellerUsername(owner);
+            if (res.isPresent()){
+                return res.get();
+            }
         }
         log.error("Find listings by username FAILED, INVALID Token");
         return null;
@@ -148,9 +155,6 @@ public class ListingServiceImpl implements  ListingService{
     @Async("threadPoolTaskExecutor")
     public CompletableFuture<Boolean> deleteOrderAndPaymentWithListing(String listingId, String token) {
         Optional<Listing> listing = listingRepository.findById(listingId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", token);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try{
             deleteOrderWithListing(listing.get());
@@ -166,6 +170,7 @@ public class ListingServiceImpl implements  ListingService{
 
     public void deleteOrderWithListing(Listing listing){
         Optional<List<Order>> result = orderRepository.deleteOrdersByListings_Id(listing.getId());
+        log.info("order with listing deleted"+result.get());
     }
 
     private boolean isSeller(String role){

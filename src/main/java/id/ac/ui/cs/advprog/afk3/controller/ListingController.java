@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.afk3.controller;
 
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.service.ListingService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@CrossOrigin(origins = "*")
+@Slf4j
 @RestController
 @RequestMapping("/listing")
 public class ListingController {
@@ -33,8 +34,11 @@ public class ListingController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Listing> createListingPost(@ModelAttribute("product") Listing listing, @RequestHeader("Authorization") String token){
+    public ResponseEntity<Listing> createListingPost(@RequestBody Listing listing, @RequestHeader("Authorization") String token){
         Listing newlisting = listingService.create(listing, token);
+        if (newlisting.getId()==null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(newlisting, HttpStatus.OK);
     }
 
@@ -82,11 +86,14 @@ public class ListingController {
 
     @GetMapping("/get-by-seller")
     public ResponseEntity<List<Listing>> getBySellerId(Model model, @RequestHeader("Authorization") String token) {
+        log.info("get by seller hitted");
         List<Listing> foundListing = listingService.findAllBySellerId(token);
         if (foundListing==null){
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            log.info("returning empty");
+            return new ResponseEntity<>(null, HttpStatus.OK);
         }
-        return new ResponseEntity<>(foundListing, HttpStatus.FOUND);
+        log.info("returning successfull");
+        return new ResponseEntity<>(foundListing, HttpStatus.OK);
     }
 
     private ModelAndView getModelAndView(String html) {

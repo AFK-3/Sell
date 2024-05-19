@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class Listing {
     @ColumnDefault("10000")
     private int price;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "listings")
     private List<Order> orders = new ArrayList<>();
 
