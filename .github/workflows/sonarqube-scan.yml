@@ -1,0 +1,19 @@
+name: Run SonarQube with Maven
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven cloud
+        run:  mvn -B verify sonar:sonar -Dsonar.projectKey=kenkomkom_kenkomkom -Dsonar.organization=KenKomKOM -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.sonarcloud_token }}
+        env:
+          SONARCLOUD_TOKEN: ${{ secrets.sonarcloud_token }}
