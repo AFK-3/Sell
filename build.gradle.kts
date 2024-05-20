@@ -37,15 +37,20 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.2.5")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus:1.12.5")
-    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
     implementation("io.jsonwebtoken:jjwt:0.2")
-    runtimeOnly("org.postgresql:postgresql")
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
     implementation("javax.xml.bind:jaxb-api:2.2.4")
+
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus:1.12.5")
+    runtimeOnly("org.postgresql:postgresql")
+
     compileOnly("org.projectlombok:lombok")
+
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.h2database:h2")
 }
