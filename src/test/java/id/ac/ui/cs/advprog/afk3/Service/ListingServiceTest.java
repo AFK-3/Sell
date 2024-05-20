@@ -77,6 +77,10 @@ public class ListingServiceTest {
                         "nulluser/get-role",HttpMethod.GET, entity,String.class))
                 .thenReturn(re2);
         Mockito.when(listingRepository.save(listing)).thenReturn(createRepoMock(listing));
+        Mockito.when(listingBuilder.setCurrent(listing)).thenReturn(listingBuilder);
+        Mockito.when(listingBuilder.addSellerUsername(username)).thenReturn(listingBuilder);
+        Mockito.when(listingBuilder.addId()).thenReturn(listingBuilder);
+        Mockito.when(listingBuilder.build()).thenReturn(listing);
         service.create(listing, token);
 
         return listing;

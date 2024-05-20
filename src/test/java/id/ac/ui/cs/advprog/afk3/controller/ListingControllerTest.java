@@ -1,6 +1,8 @@
 package id.ac.ui.cs.advprog.afk3.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import id.ac.ui.cs.advprog.afk3.controller.ListingController;
+import id.ac.ui.cs.advprog.afk3.model.Builder.ListingBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.service.ListingServiceImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,6 +26,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,6 +44,8 @@ public class ListingControllerTest {
 
     @MockBean
     private ListingServiceImpl listingService;
+
+    private ListingBuilder builder = new ListingBuilder();
 
     @InjectMocks
     private ListingController controller;
@@ -98,9 +104,10 @@ public class ListingControllerTest {
     @Test
     public void createListingPostTest() throws Exception{
         Listing listing = createAndSaveListing();
-
-        when(listingService.create(listing, token)).thenReturn(mockAddListingToRepository(listing));
-        mvc.perform(post("/listing/create").flashAttr("product",listing).header("Authorization", token))
+        listing = builder.setCurrent(listing).addId().build();
+        System.out.println(listing);
+        when(listingService.create(any(Listing.class), any(String.class))).thenReturn(mockAddListingToRepository(listing));
+        mvc.perform(post("/listing/create").content(asJsonString(listing)).contentType(MediaType.APPLICATION_JSON).header("Authorization", token))
                 .andExpect(status().isOk());
 
         when(listingService.findAll()).thenReturn(allListings);
@@ -115,8 +122,8 @@ public class ListingControllerTest {
 
         Listing listing = createAndSaveListing();
 
-        when(listingService.create(listing, token)).thenReturn(mockAddListingToRepository(listing));
-        mvc.perform(post("/listing/create").flashAttr("listing",listing)
+        when(listingService.create(any(Listing.class), any(String.class))).thenReturn(mockAddListingToRepository(builder.setCurrent(listing).addId().build()));
+        mvc.perform(post("/listing/create").content(asJsonString(listing)).contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token))
                         .andExpect(status().isOk());
 
@@ -141,8 +148,8 @@ public class ListingControllerTest {
 
         Listing listing = createAndSaveListing();
 
-        when(listingService.create(listing, token)).thenReturn(mockAddListingToRepository(listing));
-        mvc.perform(post("/listing/create").flashAttr("listing",listing)
+        when(listingService.create(any(Listing.class), any(String.class))).thenReturn(mockAddListingToRepository(listing));
+        mvc.perform(post("/listing/create").content(asJsonString(listing)).contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token))
                 .andExpect(status().isOk());
 
@@ -163,8 +170,8 @@ public class ListingControllerTest {
 
         Listing listing = createAndSaveListing();
 
-        when(listingService.create(listing, token)).thenReturn(mockAddListingToRepository(listing));
-        mvc.perform(post("/listing/create").flashAttr("listing",listing)
+        when(listingService.create(any(Listing.class), any(String.class))).thenReturn(mockAddListingToRepository(builder.setCurrent(listing).addId().build()));
+        mvc.perform(post("/listing/create").content(asJsonString(listing)).contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token))
                 .andExpect(status().isOk());
 
@@ -215,7 +222,7 @@ public class ListingControllerTest {
         when(listingService.findAllBySellerId(token)).thenReturn(allListings);
         MvcResult result = mvc.perform(get("/listing/get-by-seller")
                         .header("Authorization", token))
-                .andExpect(status().isFound()).andReturn();
+                .andExpect(status().isOk()).andReturn();
 
         String content = result.getResponse().getContentAsString();
         System.out.println(content);
@@ -250,5 +257,13 @@ public class ListingControllerTest {
         assertTrue(content.contains("id"));
         assertTrue(content.contains("name"));
         assertTrue(content.contains("quantity"));
+    }
+
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
