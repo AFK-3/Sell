@@ -9,7 +9,7 @@ plugins {
 sonar {
     properties {
         property("sonar.projectKey", "kenkomkom_kenkomkom")
-        property("sonar.organization", "kenkomkom")
+        property("sonar.organization", "KenKomKom")
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }
