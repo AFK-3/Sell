@@ -8,8 +8,8 @@ plugins {
 
 sonar {
     properties {
-        property("sonar.projectKey", "kenkomkom_kenkomkom")
-        property("sonar.organization", "KenKomKom")
+        property("sonar.projectKey", "AFK-3_Payment")
+        property("sonar.organization", "afk-3")
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }
