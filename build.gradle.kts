@@ -11,6 +11,8 @@ sonar {
         property("sonar.projectKey", "AFK-3_Payment")
         property("sonar.organization", "afk-3")
         property("sonar.host.url", "https://sonarcloud.io")
+        property ("sonar.tests", "src/test")
+        property("sonar.sources", "src/main")
     }
 }
 
