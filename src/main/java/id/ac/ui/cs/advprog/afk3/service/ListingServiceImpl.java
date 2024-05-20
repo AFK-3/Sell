@@ -157,7 +157,7 @@ public class ListingServiceImpl implements  ListingService{
         Optional<Listing> listing = listingRepository.findById(listingId);
 
         try{
-            deleteOrderWithListing(listing.get());
+            listing.ifPresent(this::deleteOrderWithListing);
 //        ResponseEntity<String> result = restTemplate.exchange(authUrl+"payment/delete-by-listing-id/"+listingId,
 //                HttpMethod.POST,entity ,
 //                String.class);
@@ -170,7 +170,6 @@ public class ListingServiceImpl implements  ListingService{
 
     public void deleteOrderWithListing(Listing listing){
         Optional<List<Order>> result = orderRepository.deleteOrdersByListings_Id(listing.getId());
-        log.info("order with listing deleted"+result.get());
     }
 
     private boolean isSeller(String role){

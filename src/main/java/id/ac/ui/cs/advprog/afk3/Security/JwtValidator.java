@@ -2,15 +2,20 @@ package id.ac.ui.cs.advprog.afk3.Security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
 public class JwtValidator {
+
+    @Value("${app.secret}")
+    private String secret;
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .setSigningKey("secret")
+                    .setSigningKey(secret)
                     .parseClaimsJws(token);
             System.out.println("validate token "+token);
             return true;
@@ -23,7 +28,7 @@ public class JwtValidator {
             token= token.substring(7, token.length());
         }
         Claims claims = Jwts.parser()
-                .setSigningKey("secret")
+                .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
