@@ -11,8 +11,6 @@ sonar {
         property("sonar.projectKey", "AFK-3_Payment")
         property("sonar.organization", "afk-3")
         property("sonar.host.url", "https://sonarcloud.io")
-        property ("sonar.tests", "src/test")
-        property("sonar.sources", "src/main")
     }
 }
 
@@ -81,8 +79,8 @@ tasks.jacocoTestReport {
     }))
     dependsOn(tasks.test) // tests are required to run before generating the report
     reports {
-        xml.required.set(false)
-        csv.required.set(false)
+        xml.required.set(true)
+        csv.required.set(true)
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
 }
