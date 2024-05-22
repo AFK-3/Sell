@@ -7,6 +7,7 @@ import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
 import id.ac.ui.cs.advprog.afk3.service.ListingServiceImpl;
+import id.ac.ui.cs.advprog.afk3.service.OrderService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ public class ListingServiceTest {
     ListingRepository listingRepository;
 
     @MockBean
-    OrderRepository orderRepository;
+    OrderService orderService;
 
     @MockBean
     ListingBuilder listingBuilder;
@@ -328,7 +329,7 @@ public class ListingServiceTest {
         when(listingRepository.findById("00558e9f-1c39-460e-8860-71af6af63bc7")).thenReturn(Optional.of(listing2));
         CompletableFuture<Boolean> result = service.deleteOrderAndPaymentWithListing("00558e9f-1c39-460e-8860-71af6af63bc7", token);
         CompletableFuture.allOf(result).join();
-        verify(orderRepository, timeout(100)).deleteOrdersByListings_Id("00558e9f-1c39-460e-8860-71af6af63bc7");
+        verify(orderService, times(1)).failAllWithListing(listing2);
     }
 
     @Test

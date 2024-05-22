@@ -205,7 +205,31 @@ public class OrderServiceTest {
     @Test
     void testUpdateStatus(){
         Order order = orders.get(1);
-        Order newOrder = builder.reset().setCurrent(order)
+        Order newOrder = new Order();
+        order.setId(order.getId());
+        newOrder = builder.setCurrent(newOrder)
+                .addStatus(OrderStatus.WAITINGPAYMENT.name())
+                .build();
+
+        ResponseEntity<String> re = new ResponseEntity<String>("penjual1", HttpStatus.OK);
+        HttpEntity<String> entity = createHTTPHeader();
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
+        doReturn(Optional.of(order)).when(orderRepository).findById(order.getId());
+        doReturn(newOrder).when(orderRepository).save(any(Order.class));
+        Order result = orderService.updateStatus(order.getId(), OrderStatus.SUCCESS.name(), token);
+
+        assertEquals(order.getId(), result.getId());
+        assertEquals(OrderStatus.SUCCESS.name(), result.getStatus());
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
+
+    @Test
+    void testUpdateStatusError(){
+        Order order = orders.get(1);
+        Order newOrder = new Order();
+        order.setId(order.getId());
+        newOrder = builder.setCurrent(newOrder)
                 .addStatus(OrderStatus.SUCCESS.name())
                 .build();
 
@@ -213,13 +237,27 @@ public class OrderServiceTest {
         HttpEntity<String> entity = createHTTPHeader();
 
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
-        doReturn(Optional.of(order)).when(orderRepository).findById(order.getId().toString());
-        doReturn(newOrder).when(orderRepository).save(any(Order.class));
+        doReturn(Optional.of(order)).when(orderRepository).findById(order.getId());
         Order result = orderService.updateStatus(order.getId(), OrderStatus.SUCCESS.name(), token);
 
-        assertEquals(order.getId(), result.getId());
-        assertEquals(OrderStatus.SUCCESS.name(), result.getStatus());
-        verify(orderRepository, times(1)).save(any(Order.class));
+        newOrder = builder.setCurrent(order)
+                .addStatus(OrderStatus.FAILED.name())
+                .build();
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
+        doReturn(Optional.of(order)).when(orderRepository).findById(order.getId());
+        result = orderService.updateStatus(order.getId(), OrderStatus.SUCCESS.name(), token);
+        assertNull(result);
+
+        newOrder = builder.setCurrent(order)
+                .addStatus(OrderStatus.CANCELLED.name())
+                .build();
+
+        Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(re.getBody());
+        doReturn(Optional.of(order)).when(orderRepository).findById(order.getId());
+        result = orderService.updateStatus(order.getId(), OrderStatus.SUCCESS.name(), token);
+        assertNull(result);
+
     }
 
     @Test
@@ -310,7 +348,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void testDeleteAllWithListing(){
+    void testFailAllWithListing(){
         Listing listing1 = listingBuilder.reset()
                 .addId(UUID.fromString("eb558e9f-1c39-460e-8860-71af6af63bd6"))
                 .addSellerUsername("penjual1")
@@ -318,8 +356,8 @@ public class OrderServiceTest {
                 .addName("Sampo Cap Bambang")
                 .build();
 
-        orderService.deleteAllWithListing(listing1);
-        verify(orderRepository,times(1)).deleteOrdersByListings_Id(listing1.getId());
+        orderService.failAllWithListing(listing1);
+        verify(orderRepository,times(1)).findOrdersByListings_Id(listing1.getId());
     }
 
     private HttpEntity<String> createHTTPHeader(){
