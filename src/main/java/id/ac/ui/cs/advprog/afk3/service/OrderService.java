@@ -12,5 +12,5 @@ public interface OrderService {
     Order findById(String orderId);
     List<Order> findAllByAuthor(String username);
     List<Order> findAllWithSeller(String username);
-    void deleteAllWithListing(Listing listing);
+    void failAllWithListing(Listing listing);
 }

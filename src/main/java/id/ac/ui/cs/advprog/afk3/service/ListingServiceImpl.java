@@ -28,7 +28,7 @@ public class ListingServiceImpl implements  ListingService{
     private ListingRepository listingRepository;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderService orderService;
 
     @Autowired
     private ListingBuilder builder;
@@ -115,14 +115,14 @@ public class ListingServiceImpl implements  ListingService{
             Optional<Listing> toBeUpdated = listingRepository.findById(listingId);
             if (toBeUpdated.isPresent()){
                 log.info("Update listing by id {} SUCCESSFUL", listingId);
-                return builder.reset().setCurrent(toBeUpdated.get())
+                return listingRepository.save(builder.reset().setCurrent(toBeUpdated.get())
                         .addName(listing.getName())
                         .addQuantity(listing.getQuantity())
                         .addDescription(listing.getDescription())
-                        .build();
+                        .build());
             }
         }
-        log.error("Update listing by id {} FAILED", listingId);
+        log.info("Update listing by id {} FAILED", listingId);
         return null;
     }
 
@@ -153,14 +153,11 @@ public class ListingServiceImpl implements  ListingService{
 
     @Override
     @Async("threadPoolTaskExecutor")
-    public CompletableFuture<Boolean> deleteOrderAndPaymentWithListing(String listingId, String token) {
+    public CompletableFuture<Boolean> failOrderWithListing(String listingId, String token) {
         Optional<Listing> listing = listingRepository.findById(listingId);
 
         try{
-            listing.ifPresent(this::deleteOrderWithListing);
-//        ResponseEntity<String> result = restTemplate.exchange(authUrl+"payment/delete-by-listing-id/"+listingId,
-//                HttpMethod.POST,entity ,
-//                String.class);
+            listing.ifPresent(this::failOrderWithListing);
             return CompletableFuture.completedFuture(true);
         }
         catch (Exception e){
@@ -168,8 +165,8 @@ public class ListingServiceImpl implements  ListingService{
         }
     }
 
-    public void deleteOrderWithListing(Listing listing){
-        Optional<List<Order>> result = orderRepository.deleteOrdersByListings_Id(listing.getId());
+    public void failOrderWithListing(Listing listing){
+        orderService.failAllWithListing(listing);
     }
 
     private boolean isSeller(String role){

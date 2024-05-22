@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order,String> {
-    Optional<List<Order>> deleteOrdersByListings_Id(String id);
+    Optional<List<Order>> findOrdersByListings_Id(String id);
     List<Order> findAllByAuthorUsername(String authorUsername);
     Optional<List<Order>> findAllByListings_SellerUsername(String sellerUsername);
 }

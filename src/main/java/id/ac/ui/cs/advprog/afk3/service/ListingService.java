@@ -13,5 +13,5 @@ public interface ListingService {
     public Listing update(String listingId, Listing listing, String token);
     public boolean deleteListingById(String listingId, String token);
     public List<Listing> findAll(String token);
-    public CompletableFuture<Boolean> deleteOrderAndPaymentWithListing(String listingId, String token);
+    public CompletableFuture<Boolean> failOrderWithListing(String listingId, String token);
 }

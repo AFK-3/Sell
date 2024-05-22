@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.afk3.service;
 
 import id.ac.ui.cs.advprog.afk3.Security.JwtValidator;
 import id.ac.ui.cs.advprog.afk3.model.Builder.OrderBuilder;
+import id.ac.ui.cs.advprog.afk3.model.Enum.OrderStatus;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.model.Order;
@@ -105,13 +106,25 @@ public class OrderServiceImpl implements OrderService{
                 break;
             }
         }
+        if (order.getStatus().equals(OrderStatus.SUCCESS.name())){
+            log.info("order {} has already been solved",order.getId());
+            return null;
+        }
+        if (order.getStatus().equals(OrderStatus.CANCELLED.name())){
+            log.info("order {} has already been cancelled",order.getId());
+            return null;
+        }
+        if (order.getStatus().equals(OrderStatus.FAILED.name())){
+            log.info("order {} has missing item",order.getId());
+            return null;
+        }
         if (sellerFound) {
             Order newOrder = orderBuilder.setCurrent(order).addStatus(status).build();
-            log.info("order {} placed successful",newOrder.getId());
+            log.info("order {} status change successful",newOrder.getId());
             orderRepository.save(newOrder);
             return newOrder;
         }else{
-            log.error("order FAILED to be updated");
+            log.info("order NOT to be updated");
             return null;
         }
 
@@ -143,9 +156,15 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public void deleteAllWithListing(Listing listing) {
+    public void failAllWithListing(Listing listing) {
         log.info("orders deleted by with listing {}", listing.getId());
-        orderRepository.deleteOrdersByListings_Id(listing.getId());
+        Optional<List<Order>>result = orderRepository.findOrdersByListings_Id(listing.getId());
+
+        if(result.isPresent()){
+            for(Order order : result.get()){
+                orderBuilder.setCurrent(order).addStatus(OrderStatus.FAILED.name()).build();
+            }
+        }
     }
 
     private boolean isUserBuyer(String role){
