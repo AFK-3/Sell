@@ -6242,3 +6242,183 @@ Consider defining a bean of type 'id.ac.ui.cs.advprog.afk3.service.ListingServic
 2024-05-23T11:40:58.854+07:00  INFO 28952 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2024-05-23T11:40:58.855+07:00  INFO 28952 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
 2024-05-23T11:40:58.857+07:00  INFO 28952 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+2024-05-23T11:50:32.374+07:00  INFO 14068 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : Starting Afk3ApplicationTests using Java 21.0.2 with PID 14068 (started by Jim in C:\Users\Jim\IdeaProjects\AFK3)
+2024-05-23T11:50:32.377+07:00  INFO 14068 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : The following 1 profile is active: "test"
+2024-05-23T11:50:34.037+07:00  INFO 14068 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-05-23T11:50:34.157+07:00  INFO 14068 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 97 ms. Found 2 JPA repository interfaces.
+2024-05-23T11:50:35.772+07:00  INFO 14068 --- [AFK3] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-05-23T11:50:35.933+07:00  INFO 14068 --- [AFK3] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2024-05-23T11:50:36.024+07:00  INFO 14068 --- [AFK3] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-05-23T11:50:36.754+07:00  INFO 14068 --- [AFK3] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-05-23T11:50:36.841+07:00  INFO 14068 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-05-23T11:50:37.542+07:00  INFO 14068 --- [AFK3] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-05-23T11:50:37.547+07:00  INFO 14068 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-05-23T11:50:37.621+07:00  WARN 14068 --- [AFK3] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-05-23T11:50:39.864+07:00  INFO 14068 --- [AFK3] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-05-23T11:50:39.998+07:00  INFO 14068 --- [AFK3] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:50:41.491+07:00  WARN 14068 --- [AFK3] [Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-05-23T11:50:43.207+07:00  INFO 14068 --- [AFK3] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 0 endpoint(s) beneath base path '/actuator'
+2024-05-23T11:50:43.362+07:00  INFO 14068 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : Started Afk3ApplicationTests in 11.634 seconds (process running for 14.33)
+2024-05-23T11:50:44.410+07:00  INFO 14068 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : Starting Afk3Application using Java 21.0.2 with PID 14068 (started by Jim in C:\Users\Jim\IdeaProjects\AFK3)
+2024-05-23T11:50:44.411+07:00  INFO 14068 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : The following 1 profile is active: "dev"
+2024-05-23T11:50:44.840+07:00  INFO 14068 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-05-23T11:50:44.860+07:00  INFO 14068 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 19 ms. Found 2 JPA repository interfaces.
+2024-05-23T11:50:45.335+07:00  INFO 14068 --- [AFK3] [Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2024-05-23T11:50:45.362+07:00  INFO 14068 --- [AFK3] [Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-23T11:50:45.362+07:00  INFO 14068 --- [AFK3] [Test worker] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2024-05-23T11:50:45.475+07:00  INFO 14068 --- [AFK3] [Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-23T11:50:45.476+07:00  INFO 14068 --- [AFK3] [Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1056 ms
+2024-05-23T11:50:45.757+07:00  INFO 14068 --- [AFK3] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-05-23T11:50:45.765+07:00  INFO 14068 --- [AFK3] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-05-23T11:50:45.775+07:00  INFO 14068 --- [AFK3] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-05-23T11:50:45.777+07:00  INFO 14068 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2024-05-23T11:50:46.145+07:00  INFO 14068 --- [AFK3] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@7e5cec5
+2024-05-23T11:50:46.146+07:00  INFO 14068 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2024-05-23T11:50:46.174+07:00  WARN 14068 --- [AFK3] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-05-23T11:50:46.363+07:00  INFO 14068 --- [AFK3] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-05-23T11:50:46.517+07:00  INFO 14068 --- [AFK3] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:50:46.815+07:00  WARN 14068 --- [AFK3] [Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-05-23T11:50:47.332+07:00  INFO 14068 --- [AFK3] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-05-23T11:50:47.445+07:00  INFO 14068 --- [AFK3] [Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path ''
+2024-05-23T11:50:47.460+07:00  INFO 14068 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : Started Afk3Application in 3.094 seconds (process running for 18.429)
+2024-05-23T11:50:47.742+07:00  INFO 14068 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:50:47.750+07:00  INFO 14068 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-05-23T11:50:47.760+07:00  INFO 14068 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-05-23T11:50:48.078+07:00  INFO 14068 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:50:48.080+07:00  INFO 14068 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2024-05-23T11:50:48.091+07:00  INFO 14068 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+2024-05-23T11:51:15.638+07:00  INFO 10736 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : Starting Afk3ApplicationTests using Java 21.0.2 with PID 10736 (started by Jim in C:\Users\Jim\IdeaProjects\AFK3)
+2024-05-23T11:51:15.641+07:00  INFO 10736 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : The following 1 profile is active: "test"
+2024-05-23T11:51:17.309+07:00  INFO 10736 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-05-23T11:51:17.403+07:00  INFO 10736 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 78 ms. Found 2 JPA repository interfaces.
+2024-05-23T11:51:19.208+07:00  INFO 10736 --- [AFK3] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-05-23T11:51:19.420+07:00  INFO 10736 --- [AFK3] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2024-05-23T11:51:19.518+07:00  INFO 10736 --- [AFK3] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-05-23T11:51:20.278+07:00  INFO 10736 --- [AFK3] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-05-23T11:51:20.382+07:00  INFO 10736 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-05-23T11:51:21.288+07:00  INFO 10736 --- [AFK3] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-05-23T11:51:21.292+07:00  INFO 10736 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-05-23T11:51:21.380+07:00  WARN 10736 --- [AFK3] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-05-23T11:51:23.786+07:00  INFO 10736 --- [AFK3] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-05-23T11:51:23.974+07:00  INFO 10736 --- [AFK3] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:51:25.531+07:00  WARN 10736 --- [AFK3] [Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-05-23T11:51:27.191+07:00  INFO 10736 --- [AFK3] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 0 endpoint(s) beneath base path '/actuator'
+2024-05-23T11:51:27.383+07:00  INFO 10736 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : Started Afk3ApplicationTests in 12.468 seconds (process running for 15.299)
+2024-05-23T11:51:28.432+07:00  INFO 10736 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : Starting Afk3Application using Java 21.0.2 with PID 10736 (started by Jim in C:\Users\Jim\IdeaProjects\AFK3)
+2024-05-23T11:51:28.432+07:00  INFO 10736 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : The following 1 profile is active: "dev"
+2024-05-23T11:51:29.000+07:00  INFO 10736 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-05-23T11:51:29.023+07:00  INFO 10736 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 22 ms. Found 2 JPA repository interfaces.
+2024-05-23T11:51:29.460+07:00  INFO 10736 --- [AFK3] [Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2024-05-23T11:51:29.486+07:00  INFO 10736 --- [AFK3] [Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-23T11:51:29.487+07:00  INFO 10736 --- [AFK3] [Test worker] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2024-05-23T11:51:29.606+07:00  INFO 10736 --- [AFK3] [Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-23T11:51:29.607+07:00  INFO 10736 --- [AFK3] [Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1171 ms
+2024-05-23T11:51:29.934+07:00  INFO 10736 --- [AFK3] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-05-23T11:51:29.942+07:00  INFO 10736 --- [AFK3] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-05-23T11:51:29.955+07:00  INFO 10736 --- [AFK3] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-05-23T11:51:29.958+07:00  INFO 10736 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2024-05-23T11:51:30.344+07:00  INFO 10736 --- [AFK3] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@39496c7c
+2024-05-23T11:51:30.345+07:00  INFO 10736 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2024-05-23T11:51:30.373+07:00  WARN 10736 --- [AFK3] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-05-23T11:51:30.606+07:00  INFO 10736 --- [AFK3] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-05-23T11:51:30.746+07:00  INFO 10736 --- [AFK3] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:51:31.097+07:00  WARN 10736 --- [AFK3] [Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-05-23T11:51:31.720+07:00  INFO 10736 --- [AFK3] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-05-23T11:51:31.791+07:00  INFO 10736 --- [AFK3] [Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path ''
+2024-05-23T11:51:31.801+07:00  INFO 10736 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : Started Afk3Application in 3.416 seconds (process running for 19.718)
+2024-05-23T11:51:32.046+07:00  INFO 10736 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:51:32.050+07:00  INFO 10736 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-05-23T11:51:32.052+07:00  INFO 10736 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-05-23T11:51:32.321+07:00  INFO 10736 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:51:32.323+07:00  INFO 10736 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2024-05-23T11:51:32.329+07:00  INFO 10736 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+2024-05-23T11:51:50.008+07:00  INFO 3428 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : Starting Afk3ApplicationTests using Java 21.0.2 with PID 3428 (started by Jim in C:\Users\Jim\IdeaProjects\AFK3)
+2024-05-23T11:51:50.010+07:00  INFO 3428 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : The following 1 profile is active: "test"
+2024-05-23T11:51:51.609+07:00  INFO 3428 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-05-23T11:51:51.716+07:00  INFO 3428 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 87 ms. Found 2 JPA repository interfaces.
+2024-05-23T11:51:53.306+07:00  INFO 3428 --- [AFK3] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-05-23T11:51:53.463+07:00  INFO 3428 --- [AFK3] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2024-05-23T11:51:53.549+07:00  INFO 3428 --- [AFK3] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-05-23T11:51:54.256+07:00  INFO 3428 --- [AFK3] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-05-23T11:51:54.363+07:00  INFO 3428 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-05-23T11:51:55.125+07:00  INFO 3428 --- [AFK3] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-05-23T11:51:55.129+07:00  INFO 3428 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-05-23T11:51:55.192+07:00  WARN 3428 --- [AFK3] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-05-23T11:51:57.312+07:00  INFO 3428 --- [AFK3] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-05-23T11:51:57.458+07:00  INFO 3428 --- [AFK3] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:51:58.957+07:00  WARN 3428 --- [AFK3] [Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-05-23T11:52:00.657+07:00  INFO 3428 --- [AFK3] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 0 endpoint(s) beneath base path '/actuator'
+2024-05-23T11:52:00.811+07:00  INFO 3428 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : Started Afk3ApplicationTests in 11.441 seconds (process running for 14.075)
+2024-05-23T11:52:01.986+07:00  INFO 3428 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : Starting Afk3Application using Java 21.0.2 with PID 3428 (started by Jim in C:\Users\Jim\IdeaProjects\AFK3)
+2024-05-23T11:52:01.986+07:00  INFO 3428 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : The following 1 profile is active: "dev"
+2024-05-23T11:52:02.497+07:00  INFO 3428 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-05-23T11:52:02.520+07:00  INFO 3428 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 23 ms. Found 2 JPA repository interfaces.
+2024-05-23T11:52:02.959+07:00  INFO 3428 --- [AFK3] [Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2024-05-23T11:52:02.994+07:00  INFO 3428 --- [AFK3] [Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-23T11:52:02.995+07:00  INFO 3428 --- [AFK3] [Test worker] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2024-05-23T11:52:03.144+07:00  INFO 3428 --- [AFK3] [Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-23T11:52:03.145+07:00  INFO 3428 --- [AFK3] [Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1155 ms
+2024-05-23T11:52:03.498+07:00  INFO 3428 --- [AFK3] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-05-23T11:52:03.505+07:00  INFO 3428 --- [AFK3] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-05-23T11:52:03.516+07:00  INFO 3428 --- [AFK3] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-05-23T11:52:03.519+07:00  INFO 3428 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2024-05-23T11:52:03.931+07:00  INFO 3428 --- [AFK3] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@160250e6
+2024-05-23T11:52:03.931+07:00  INFO 3428 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2024-05-23T11:52:03.982+07:00  WARN 3428 --- [AFK3] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-05-23T11:52:04.212+07:00  INFO 3428 --- [AFK3] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-05-23T11:52:04.365+07:00  INFO 3428 --- [AFK3] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:52:04.739+07:00  WARN 3428 --- [AFK3] [Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-05-23T11:52:05.322+07:00  INFO 3428 --- [AFK3] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-05-23T11:52:05.437+07:00  INFO 3428 --- [AFK3] [Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path ''
+2024-05-23T11:52:05.448+07:00  INFO 3428 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : Started Afk3Application in 3.5 seconds (process running for 18.711)
+2024-05-23T11:52:05.777+07:00  INFO 3428 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:52:05.781+07:00  INFO 3428 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-05-23T11:52:05.789+07:00  INFO 3428 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-05-23T11:52:06.105+07:00  INFO 3428 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:52:06.107+07:00  INFO 3428 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2024-05-23T11:52:06.116+07:00  INFO 3428 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+2024-05-23T11:52:18.329+07:00  INFO 29984 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : Starting Afk3ApplicationTests using Java 21.0.2 with PID 29984 (started by Jim in C:\Users\Jim\IdeaProjects\AFK3)
+2024-05-23T11:52:18.332+07:00  INFO 29984 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : The following 1 profile is active: "test"
+2024-05-23T11:52:20.320+07:00  INFO 29984 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-05-23T11:52:20.439+07:00  INFO 29984 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 95 ms. Found 2 JPA repository interfaces.
+2024-05-23T11:52:21.911+07:00  INFO 29984 --- [AFK3] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-05-23T11:52:22.055+07:00  INFO 29984 --- [AFK3] [Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2024-05-23T11:52:22.138+07:00  INFO 29984 --- [AFK3] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-05-23T11:52:22.854+07:00  INFO 29984 --- [AFK3] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-05-23T11:52:22.935+07:00  INFO 29984 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-05-23T11:52:23.662+07:00  INFO 29984 --- [AFK3] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-05-23T11:52:23.666+07:00  INFO 29984 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-05-23T11:52:23.735+07:00  WARN 29984 --- [AFK3] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-05-23T11:52:26.193+07:00  INFO 29984 --- [AFK3] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-05-23T11:52:26.354+07:00  INFO 29984 --- [AFK3] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:52:27.931+07:00  WARN 29984 --- [AFK3] [Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-05-23T11:52:29.846+07:00  INFO 29984 --- [AFK3] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 0 endpoint(s) beneath base path '/actuator'
+2024-05-23T11:52:30.015+07:00  INFO 29984 --- [AFK3] [Test worker] i.a.u.c.a.afk3.Afk3ApplicationTests      : Started Afk3ApplicationTests in 12.385 seconds (process running for 15.03)
+2024-05-23T11:52:31.125+07:00  INFO 29984 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : Starting Afk3Application using Java 21.0.2 with PID 29984 (started by Jim in C:\Users\Jim\IdeaProjects\AFK3)
+2024-05-23T11:52:31.125+07:00  INFO 29984 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : The following 1 profile is active: "dev"
+2024-05-23T11:52:31.637+07:00  INFO 29984 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-05-23T11:52:31.669+07:00  INFO 29984 --- [AFK3] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 31 ms. Found 2 JPA repository interfaces.
+2024-05-23T11:52:32.122+07:00  INFO 29984 --- [AFK3] [Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2024-05-23T11:52:32.153+07:00  INFO 29984 --- [AFK3] [Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-23T11:52:32.154+07:00  INFO 29984 --- [AFK3] [Test worker] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2024-05-23T11:52:32.262+07:00  INFO 29984 --- [AFK3] [Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-23T11:52:32.263+07:00  INFO 29984 --- [AFK3] [Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1132 ms
+2024-05-23T11:52:32.588+07:00  INFO 29984 --- [AFK3] [Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-05-23T11:52:32.595+07:00  INFO 29984 --- [AFK3] [Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-05-23T11:52:32.606+07:00  INFO 29984 --- [AFK3] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-05-23T11:52:32.609+07:00  INFO 29984 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2024-05-23T11:52:33.117+07:00  INFO 29984 --- [AFK3] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@4cb1dce6
+2024-05-23T11:52:33.118+07:00  INFO 29984 --- [AFK3] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2024-05-23T11:52:33.145+07:00  WARN 29984 --- [AFK3] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-05-23T11:52:33.300+07:00  INFO 29984 --- [AFK3] [Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-05-23T11:52:33.440+07:00  INFO 29984 --- [AFK3] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:52:33.756+07:00  WARN 29984 --- [AFK3] [Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-05-23T11:52:34.290+07:00  INFO 29984 --- [AFK3] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-05-23T11:52:34.407+07:00  INFO 29984 --- [AFK3] [Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path ''
+2024-05-23T11:52:34.418+07:00  INFO 29984 --- [AFK3] [Test worker] i.ac.ui.cs.advprog.afk3.Afk3Application  : Started Afk3Application in 3.344 seconds (process running for 19.434)
+2024-05-23T11:52:34.654+07:00  INFO 29984 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:52:34.658+07:00  INFO 29984 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-05-23T11:52:34.668+07:00  INFO 29984 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-05-23T11:52:34.941+07:00  INFO 29984 --- [AFK3] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-23T11:52:34.943+07:00  INFO 29984 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2024-05-23T11:52:34.947+07:00  INFO 29984 --- [AFK3] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
