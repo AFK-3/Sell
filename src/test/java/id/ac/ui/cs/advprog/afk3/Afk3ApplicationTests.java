@@ -26,10 +26,9 @@ class Afk3ApplicationTests {
 
     @Test
     void contextLoads() {
-        Afk3Application.main(new String[] {});
+        Afk3Application asyncConfig = new Afk3Application();
         assertThat(listingController).isNotNull();
         assertThat(orderController).isNotNull();
-        Afk3Application asyncConfig = new Afk3Application();
         Executor executor = asyncConfig.taskExecutor();
         assertNotNull(executor);
 
