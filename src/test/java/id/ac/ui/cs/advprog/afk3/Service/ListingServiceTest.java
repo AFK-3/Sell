@@ -7,6 +7,10 @@ import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
 import id.ac.ui.cs.advprog.afk3.service.ListingServiceImpl;
+import id.ac.ui.cs.advprog.afk3.service.OrderService;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +18,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.*;
@@ -33,11 +38,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 public class ListingServiceTest {
+
+    @MockBean
+    private EntityManager entityManager;
+
     @MockBean
     ListingRepository listingRepository;
 
     @MockBean
-    OrderRepository orderRepository;
+    OrderService orderService;
 
     @MockBean
     ListingBuilder listingBuilder;
@@ -53,6 +62,10 @@ public class ListingServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
+
+    Session session;
+
+    Filter filter;
 
     @BeforeEach
     void setUp(){
@@ -300,12 +313,18 @@ public class ListingServiceTest {
 
         ResponseEntity<String> re = new ResponseEntity<String>("user", HttpStatus.OK);
 
+        Session mockedSession = Mockito.mock(Session.class);
+        Filter mockedFilter = Mockito.mock(Filter.class);
+        when(entityManager.unwrap(Session.class)).thenReturn(mockedSession);
+        when(mockedSession.enableFilter("deletedProductFilter")).thenReturn(mockedFilter);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user");
         when(listingRepository.findAllBySellerUsername("user")).thenReturn(Optional.of(
                 allListings.stream().filter(
                         listing -> {return listing.getSellerUsername().equals("user");}).collect(Collectors.toList())
                 ));
         List<Listing> result = service.findAllBySellerId(token);
+        verify(mockedSession).enableFilter("deletedProductFilter");
+        verify(mockedFilter).setParameter("isDeleted", false);
         assertFalse(result.isEmpty());
     }
 
@@ -325,10 +344,15 @@ public class ListingServiceTest {
     @Test
     void testDeleteOrderAndPaymentWithListing(){
         Listing listing2 = createAndSaveListing("aa", "00558e9f-1c39-460e-8860-71af6af63bc7",20, UserType.SELLER.name(), "user");
+
+        Session mockedSession = Mockito.mock(Session.class);
+        Filter mockedFilter = Mockito.mock(Filter.class);
+        when(entityManager.unwrap(Session.class)).thenReturn(mockedSession);
+        when(mockedSession.enableFilter("deletedProductFilter")).thenReturn(mockedFilter);
         when(listingRepository.findById("00558e9f-1c39-460e-8860-71af6af63bc7")).thenReturn(Optional.of(listing2));
-        CompletableFuture<Boolean> result = service.deleteOrderAndPaymentWithListing("00558e9f-1c39-460e-8860-71af6af63bc7", token);
+        CompletableFuture<Boolean> result = service.failOrderWithListing("00558e9f-1c39-460e-8860-71af6af63bc7", token);
         CompletableFuture.allOf(result).join();
-        verify(orderRepository, timeout(100)).deleteOrdersByListings_Id("00558e9f-1c39-460e-8860-71af6af63bc7");
+        verify(orderService, times(1)).failAllWithListing(listing2);
     }
 
     @Test

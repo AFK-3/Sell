@@ -69,19 +69,6 @@ public class ListingTest {
     }
 
     @Test
-    void testRemoveOrderAssociated(){
-        UUID id = UUID.randomUUID();
-        listing = builder.reset().setCurrent(listing).addId(id).build();
-        List<Listing> temp = new ArrayList<>();
-        temp.add(listing);
-        Order order = new Order();
-        order.setListings(temp);
-        listing.getOrders().add(order);
-        listing.removeOrderAssociations();
-        assertTrue(order.getListings().isEmpty());
-    }
-
-    @Test
     void testSetOrders(){
         UUID id = UUID.randomUUID();
         assertTrue(listing.getOrders().isEmpty());

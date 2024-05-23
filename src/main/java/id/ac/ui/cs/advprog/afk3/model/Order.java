@@ -4,10 +4,7 @@ import id.ac.ui.cs.advprog.afk3.model.Enum.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Getter @Setter
 @Entity
@@ -21,10 +18,13 @@ public class Order {
     private String authorUsername;
     private String status;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinTable(name="order_has_listings",
             joinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "listing_id", referencedColumnName = "id")
     )
     private List<Listing> listings = new ArrayList<>();
+
+    @ElementCollection
+    private Map<String, Integer> listingQuantity;
 }

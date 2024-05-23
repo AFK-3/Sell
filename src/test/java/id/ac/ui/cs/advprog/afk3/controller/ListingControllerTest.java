@@ -130,7 +130,7 @@ public class ListingControllerTest {
         Listing listing2 = new Listing();
         listing2.setId(listing.getId());
         listing2.setName("adi");
-        mvc.perform(post("/listing/edit").flashAttr("listing",listing2)
+        mvc.perform(post("/listing/edit").content(asJsonString(listing2)).contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token))
                         .andExpect(status().isOk());
 

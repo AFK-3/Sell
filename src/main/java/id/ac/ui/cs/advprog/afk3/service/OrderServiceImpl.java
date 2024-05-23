@@ -2,13 +2,17 @@ package id.ac.ui.cs.advprog.afk3.service;
 
 import id.ac.ui.cs.advprog.afk3.Security.JwtValidator;
 import id.ac.ui.cs.advprog.afk3.model.Builder.OrderBuilder;
+import id.ac.ui.cs.advprog.afk3.model.Enum.OrderStatus;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
 import id.ac.ui.cs.advprog.afk3.model.Order;
 import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
 import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.ast.Or;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +24,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
 public class OrderServiceImpl implements OrderService{
 
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -47,41 +51,49 @@ public class OrderServiceImpl implements OrderService{
     RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public Order createOrder(Order order, String token){
+    public Order createOrder(Map<String, Integer> order, String token){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
         ResponseEntity<String> authorData = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
         String owner = validator.getUsernameFromJWT(token);
 
-        System.out.println(order.getId()+" "+authorData.getBody()+" "+owner);
-        if (isUserBuyer(authorData.getBody())
-                && isAuthorAccessing(owner, order))
+        if (isUserBuyer(authorData.getBody()))
         {
             // Kurangin semua quantitas listing
             // Kalo udah habis / melebihi stok, otomatis batal
             List<Listing> outOfStock = new ArrayList<>();
-            for (Listing listing : order.getListings()){
-                Optional<Listing> exist = listingRepository.findById(listing.getId());
-                if (exist.isPresent() && exist.get().getQuantity()-listing.getQuantity()>=0) {
-                    exist.get().setQuantity(exist.get().getQuantity() - listing.getQuantity());
+            List<Listing> purchased = new ArrayList<>();
+            Map<String, Integer> quantity = new HashMap<>();
+
+            for (String listingId : order.keySet()){
+
+                Optional<Listing> exist = listingRepository.findById(listingId);
+
+                if (exist.isPresent() && !exist.get().isDeleted() && exist.get().getQuantity()-order.get(listingId)>=0) {
+                    exist.get().setQuantity(exist.get().getQuantity() - order.get(listingId));
+                    purchased.add(exist.get());
+                    quantity.put(exist.get().getId(), order.get(listingId));
                 }else exist.ifPresent(outOfStock::add);
             }
             for (Listing l: outOfStock){
-                for (int i=0; i<order.getListings().size(); i++){
-                    if (order.getListings().get(i).getId().equals(l.getId())){
-                        log.error("listing {} out of stock",order.getListings().get(i).getId());
-                        order.getListings().remove(i);
+                for (String listingId : order.keySet()){
+                    if (listingId.equals(l.getId())){
+                        log.error("listing {} out of stock",listingId);
+                        order.remove(listingId);
                         break;
                     }
                 }
             }
-            Order newOrder = orderBuilder.reset().setCurrent(order)
-                    .addListings(order.getListings())
+//            order.setListingQuantity(purchased);
+            Order newOrder = orderBuilder.reset()
+                    .addAuthor(owner)
+                    .addListings(purchased)
                     .firstSetUp()
                     .build();
+            newOrder.setListingQuantity(quantity);
             System.out.println(newOrder);
-            orderRepository.save(newOrder);
+            newOrder = orderRepository.save(newOrder);
             log.info("order {} placed successful",newOrder.getId());
             return newOrder;
         }
@@ -105,13 +117,25 @@ public class OrderServiceImpl implements OrderService{
                 break;
             }
         }
+        if (order.getStatus().equals(OrderStatus.SUCCESS.name())){
+            log.info("order {} has already been solved",order.getId());
+            return null;
+        }
+        if (order.getStatus().equals(OrderStatus.CANCELLED.name())){
+            log.info("order {} has already been cancelled",order.getId());
+            return null;
+        }
+        if (order.getStatus().equals(OrderStatus.FAILED.name())){
+            log.info("order {} has missing item",order.getId());
+            return null;
+        }
         if (sellerFound) {
             Order newOrder = orderBuilder.setCurrent(order).addStatus(status).build();
-            log.info("order {} placed successful",newOrder.getId());
+            log.info("order {} status change successful",newOrder.getId());
             orderRepository.save(newOrder);
             return newOrder;
         }else{
-            log.error("order FAILED to be updated");
+            log.info("order NOT to be updated");
             return null;
         }
 
@@ -138,14 +162,50 @@ public class OrderServiceImpl implements OrderService{
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         String loggedin = validator.getUsernameFromJWT(token);
-        Optional<List<Order>> result = orderRepository.findAllByListings_SellerUsername(loggedin);
-        return result.orElse(null);
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", true);
+        List<Order> resultWaitingPayment = orderRepository.findAllByListings_SellerUsername_AndStatus(loggedin, OrderStatus.WAITINGPAYMENT.name());
+        session.disableFilter("deletedProductFilter");
+
+        session = entityManager.unwrap(Session.class);
+        filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", false);
+        List<Order> resultFailed = orderRepository.findAllByListings_SellerUsername_AndStatus(loggedin, OrderStatus.FAILED.name());
+        session.disableFilter("deletedProductFilter");
+
+        session = entityManager.unwrap(Session.class);
+        filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", false);
+        List<Order> resultSuccess = orderRepository.findAllByListings_SellerUsername_AndStatus(loggedin, OrderStatus.SUCCESS.name());
+        session.disableFilter("deletedProductFilter");
+
+        session = entityManager.unwrap(Session.class);
+        filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", false);
+        List<Order> resultCancelled = orderRepository.findAllByListings_SellerUsername_AndStatus(loggedin, OrderStatus.CANCELLED.name());
+        session.disableFilter("deletedProductFilter");
+
+        List<Order> result = new ArrayList<>();
+        Stream.of(resultCancelled, resultFailed, resultSuccess, resultWaitingPayment).forEach(result::addAll);
+        return result;
     }
 
     @Override
-    public void deleteAllWithListing(Listing listing) {
+    public void failAllWithListing(Listing listing) {
         log.info("orders deleted by with listing {}", listing.getId());
-        orderRepository.deleteOrdersByListings_Id(listing.getId());
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", false);
+        Optional<List<Order>>result = orderRepository.findOrdersByListings_Id(listing.getId());
+        session.disableFilter("deletedProductFilter");
+
+        if(result.isPresent()){
+            for(Order order : result.get()){
+                Order newOrder= orderBuilder.setCurrent(order).addStatus(OrderStatus.FAILED.name()).build();
+                orderRepository.save(newOrder);
+            }
+        }
     }
 
     private boolean isUserBuyer(String role){
@@ -153,8 +213,4 @@ public class OrderServiceImpl implements OrderService{
         else return UserType.BUYER.name().equals(role);
     }
 
-    private  boolean isAuthorAccessing(String author, Order order){
-        if (author!=null) return order.getAuthorUsername().equals(author);
-        return false;
-    }
 }

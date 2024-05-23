@@ -51,14 +51,14 @@ public class ListingController {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<Listing> editProductPost(@ModelAttribute("listing") Listing listing, @RequestHeader("Authorization") String token){
-        listingService.update(listing.getId().toString(), listing ,token);
+    public ResponseEntity<Listing> editProductPost(@RequestBody Listing listing, @RequestHeader("Authorization") String token){
+        listingService.update(listing.getId(), listing ,token);
         return new ResponseEntity<>(listing, HttpStatus.OK);
     }
 
     @PostMapping("/delete")
     public ResponseEntity<String> deleteListing(Model model, @RequestParam("listingId") String listingId, @RequestHeader("Authorization") String token){
-        CompletableFuture<Boolean> resultFromDelete = listingService.deleteOrderAndPaymentWithListing(listingId, token);
+        CompletableFuture<Boolean> resultFromDelete = listingService.failOrderWithListing(listingId, token);
         boolean success = listingService.deleteListingById(listingId,token);
         if (success){
             return new ResponseEntity<>("Listing with ID: "+listingId+" deleted successfully!", HttpStatus.OK);

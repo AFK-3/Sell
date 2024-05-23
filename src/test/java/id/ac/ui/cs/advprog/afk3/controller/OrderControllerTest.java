@@ -19,7 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import id.ac.ui.cs.advprog.afk3.service.ListingService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
@@ -66,9 +68,11 @@ public class OrderControllerTest {
         listingList.add(listing);
         dto.setListings(listingList);
 
+        Map<String, Integer> map = new HashMap<>();
+        map.put("a",1);
 
         when(listingService.findById(listing.getId())).thenReturn(listing);
-        mvc.perform(post("/order/create").content(asJsonString(dto)).contentType(MediaType.APPLICATION_JSON).header("Authorization", token))
+        mvc.perform(post("/order/create").content(asJsonString(map)).contentType(MediaType.APPLICATION_JSON).header("Authorization", token))
                 .andExpect(status().isCreated());
     }
 
