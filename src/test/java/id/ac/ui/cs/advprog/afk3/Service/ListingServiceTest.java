@@ -252,9 +252,14 @@ public class ListingServiceTest {
 
         ResponseEntity<String> re = new ResponseEntity<String>("user", HttpStatus.OK);
 
+        Session mockedSession = Mockito.mock(Session.class);
+        Filter mockedFilter = Mockito.mock(Filter.class);
+        when(entityManager.unwrap(Session.class)).thenReturn(mockedSession);
+        when(mockedSession.enableFilter("deletedProductFilter")).thenReturn(mockedFilter);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user");
         when(listingRepository.findById(listing2.getId())).thenReturn(Optional.of(listing2));
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
+        verify(mockedFilter).setParameter("isDeleted", true);
         allListings.remove(listing2); // assume listingRepo deletes id
 
         when(listingRepository.findAll()).thenReturn(allListings);
@@ -271,8 +276,13 @@ public class ListingServiceTest {
 
         ResponseEntity<String> re = new ResponseEntity<String>("user", HttpStatus.OK);
 
+        Session mockedSession = Mockito.mock(Session.class);
+        Filter mockedFilter = Mockito.mock(Filter.class);
+        when(entityManager.unwrap(Session.class)).thenReturn(mockedSession);
+        when(mockedSession.enableFilter("deletedProductFilter")).thenReturn(mockedFilter);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user");
         service.deleteListingById("id", token);
+        verify(mockedFilter).setParameter("isDeleted", true);
         verify(listingRepository, times(0)).deleteById("id");
     }
 
@@ -286,8 +296,13 @@ public class ListingServiceTest {
 
         ResponseEntity<String> re = new ResponseEntity<String>("user1", HttpStatus.OK);
 
+        Session mockedSession = Mockito.mock(Session.class);
+        Filter mockedFilter = Mockito.mock(Filter.class);
+        when(entityManager.unwrap(Session.class)).thenReturn(mockedSession);
+        when(mockedSession.enableFilter("deletedProductFilter")).thenReturn(mockedFilter);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn("user1");
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
+        verify(mockedFilter).setParameter("isDeleted", true);
         verify(listingRepository, times(0)).deleteById("00558e9f-1c39-460e-8860-71af6af63bc7");
     }
     @Test
@@ -300,6 +315,10 @@ public class ListingServiceTest {
 
         ResponseEntity re = new ResponseEntity(null, HttpStatus.OK);
 
+        Session mockedSession = Mockito.mock(Session.class);
+        Filter mockedFilter = Mockito.mock(Filter.class);
+        when(entityManager.unwrap(Session.class)).thenReturn(mockedSession);
+        when(mockedSession.enableFilter("deletedProductFilter")).thenReturn(mockedFilter);
         Mockito.when(validator.getUsernameFromJWT(token)).thenReturn(null);
         service.deleteListingById("00558e9f-1c39-460e-8860-71af6af63bc7", token);
         verify(listingRepository, times(0)).deleteById("00558e9f-1c39-460e-8860-71af6af63bc7");

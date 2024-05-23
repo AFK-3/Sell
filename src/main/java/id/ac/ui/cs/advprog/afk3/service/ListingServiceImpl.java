@@ -138,8 +138,13 @@ public class ListingServiceImpl implements  ListingService{
     public boolean deleteListingById(String listingId, String token) {
 
         String owner = validator.getUsernameFromJWT(token);
+
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", true);
         Optional<Listing> listing = listingRepository.findById(listingId);
-        if (listing.isPresent() && owner!=null && owner.equals(listing.get().getSellerUsername())){
+
+        if (listing.isPresent() && !listing.get().isDeleted() && owner!=null && owner.equals(listing.get().getSellerUsername())){
             log.info("Delete listing by id {} SUCCESSFUL", listingId);
             listingRepository.deleteById(listingId);
             return true;
