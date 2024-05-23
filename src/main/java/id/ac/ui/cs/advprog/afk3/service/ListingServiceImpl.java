@@ -55,10 +55,7 @@ public class ListingServiceImpl implements  ListingService{
         String owner = validator.getUsernameFromJWT(token);
         log.info("hitting url "+authUrl+"user/get-role");
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
-        System.out.println("zczc"+owner+" "+role);
-        System.out.println(owner!=null);
-        System.out.println(fieldValid(listing));
-        System.out.println(isSeller(role.getBody()));
+
         if (owner!=null && fieldValid(listing) && isSeller(role.getBody())){
             listing = builder.setCurrent(listing).addSellerUsername(owner).addId().build();
             log.info("listing {} saved SUCCESS",listing.getId());
@@ -119,15 +116,19 @@ public class ListingServiceImpl implements  ListingService{
         log.info("hitting url "+authUrl+"user/get-role");
         ResponseEntity<String > role = restTemplate.exchange(authUrl+"user/get-role", HttpMethod.GET,entity ,String.class);
 
-        if (owner!=null && owner.equals(listing.getSellerUsername()) && isSeller(role.getBody())){
-            Optional<Listing> toBeUpdated = listingRepository.findById(listingId);
-            if (toBeUpdated.isPresent()){
-                log.info("Update listing by id {} SUCCESSFUL", listingId);
-                return listingRepository.save(builder.reset().setCurrent(toBeUpdated.get())
-                        .addName(listing.getName())
-                        .addQuantity(listing.getQuantity())
-                        .addDescription(listing.getDescription())
-                        .build());
+        if (owner!=null ){
+            if (owner.equals(listing.getSellerUsername())){
+                if(isSeller(role.getBody())){
+                    Optional<Listing> toBeUpdated = listingRepository.findById(listingId);
+                    if (toBeUpdated.isPresent()) {
+                        log.info("Update listing by id {} SUCCESSFUL", listingId);
+                        return listingRepository.save(builder.reset().setCurrent(toBeUpdated.get())
+                                .addName(listing.getName())
+                                .addQuantity(listing.getQuantity())
+                                .addDescription(listing.getDescription())
+                                .build());
+                    }
+                }
             }
         }
         log.info("Update listing by id {} FAILED", listingId);
@@ -172,13 +173,8 @@ public class ListingServiceImpl implements  ListingService{
         filter.setParameter("isDeleted", true);
         Optional<Listing> listing = listingRepository.findById(listingId);
         session.disableFilter("deletedProductFilter");
-        try{
-            listing.ifPresent(this::failOrderWithListing);
-            return CompletableFuture.completedFuture(true);
-        }
-        catch (Exception e){
-            return CompletableFuture.completedFuture(false);
-        }
+        listing.ifPresent(this::failOrderWithListing);
+        return CompletableFuture.completedFuture(true);
     }
 
     public void failOrderWithListing(Listing listing){
