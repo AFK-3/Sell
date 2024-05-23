@@ -7,17 +7,21 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.aspectj.weaver.ast.Or;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.*;
 
 @Getter @Setter
 @Entity
 @NoArgsConstructor
 @Table(name = "Listing")
+@SQLDelete(sql = "UPDATE listing SET deleted = true WHERE id=?")
+@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
+@Filter(name = "deletedProductFilter", condition = "(:isDeleted IS NULL OR deleted = :isDeleted)")
 public class Listing {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,6 +31,9 @@ public class Listing {
     private String description;
     private int quantity;
 
+    @ColumnDefault("false")
+    private boolean deleted = Boolean.FALSE;
+
     @ColumnDefault("10000")
     private int price;
 
@@ -34,10 +41,4 @@ public class Listing {
     @ManyToMany(mappedBy = "listings")
     private List<Order> orders = new ArrayList<>();
 
-    @PreRemove
-    public void removeOrderAssociations() {
-        for (Order order: this.orders) {
-            order.getListings().remove(this);
-        }
-    }
 }

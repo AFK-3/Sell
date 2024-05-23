@@ -14,5 +14,5 @@ import org.springframework.stereotype.Repository;
 public interface OrderRepository extends JpaRepository<Order,String> {
     Optional<List<Order>> findOrdersByListings_Id(String id);
     List<Order> findAllByAuthorUsername(String authorUsername);
-    Optional<List<Order>> findAllByListings_SellerUsername(String sellerUsername);
+    List<Order> findAllByListings_SellerUsername_AndStatus(String sellerUsername, String status);
 }

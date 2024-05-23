@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/order")
@@ -40,13 +41,9 @@ public class OrderController {
         return modelAndView;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Order> createOrderPagePost(@RequestBody Order order, @RequestHeader("Authorization") String token){
+    @PostMapping(value="/create", consumes = {"application/json"})
+    public ResponseEntity<Order> createOrderPagePost(@RequestBody Map<String,Integer> order, @RequestHeader("Authorization") String token){
         System.out.println(order);
-        for (Listing listing : order.getListings()){
-            Listing temp = listingService.findById(listing.getId());
-            listing.setSellerUsername(temp.getSellerUsername());
-        }
         Order order1 = orderService.createOrder(order, token);
 
         return new ResponseEntity<>(order1, HttpStatus.CREATED);

@@ -5,10 +5,11 @@ import id.ac.ui.cs.advprog.afk3.Security.JwtValidator;
 import id.ac.ui.cs.advprog.afk3.model.Builder.ListingBuilder;
 import id.ac.ui.cs.advprog.afk3.model.Enum.UserType;
 import id.ac.ui.cs.advprog.afk3.model.Listing;
-import id.ac.ui.cs.advprog.afk3.model.Order;
 import id.ac.ui.cs.advprog.afk3.repository.ListingRepository;
-import id.ac.ui.cs.advprog.afk3.repository.OrderRepository;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -24,6 +25,9 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Service
 public class ListingServiceImpl implements  ListingService{
+    @Autowired
+    private EntityManager entityManager;
+
     @Autowired
     private ListingRepository listingRepository;
 
@@ -81,7 +85,11 @@ public class ListingServiceImpl implements  ListingService{
         String owner = validator.getUsernameFromJWT(token);
         if (owner!=null){
             log.info("Find listings by username {} SUCCESSFUL", owner);
+            Session session = entityManager.unwrap(Session.class);
+            Filter filter = session.enableFilter("deletedProductFilter");
+            filter.setParameter("isDeleted", false);
             Optional<List<Listing>> res =  listingRepository.findAllBySellerUsername(owner);
+            session.disableFilter("deletedProductFilter");
             if (res.isPresent()){
                 return res.get();
             }
@@ -154,8 +162,11 @@ public class ListingServiceImpl implements  ListingService{
     @Override
     @Async("threadPoolTaskExecutor")
     public CompletableFuture<Boolean> failOrderWithListing(String listingId, String token) {
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", true);
         Optional<Listing> listing = listingRepository.findById(listingId);
-
+        session.disableFilter("deletedProductFilter");
         try{
             listing.ifPresent(this::failOrderWithListing);
             return CompletableFuture.completedFuture(true);
