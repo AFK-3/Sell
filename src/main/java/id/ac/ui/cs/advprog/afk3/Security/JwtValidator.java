@@ -12,17 +12,6 @@ public class JwtValidator {
     @Value("${app.secret}")
     private String secret;
 
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(secret)
-                    .parseClaimsJws(token);
-            System.out.println("validate token "+token);
-            return true;
-        } catch (Exception ex) {
-            throw new RuntimeException("JWT was exprired or incorrect",ex.fillInStackTrace());
-        }
-    }
     public String getUsernameFromJWT(String token){
         if(token.startsWith("Bearer ")) {
             token= token.substring(7, token.length());
