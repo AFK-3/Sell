@@ -162,29 +162,11 @@ public class OrderServiceImpl implements OrderService{
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
 
         String loggedin = validator.getUsernameFromJWT(token);
-        Session session = entityManager.unwrap(Session.class);
-        Filter filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isDeleted", true);
-        List<Order> resultWaitingPayment = orderRepository.findAllByListings_SellerUsername_AndStatus(loggedin, OrderStatus.WAITINGPAYMENT.name());
-        session.disableFilter("deletedProductFilter");
 
-        session = entityManager.unwrap(Session.class);
-        filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isDeleted", false);
-        List<Order> resultFailed = orderRepository.findAllByListings_SellerUsername_AndStatus(loggedin, OrderStatus.FAILED.name());
-        session.disableFilter("deletedProductFilter");
-
-        session = entityManager.unwrap(Session.class);
-        filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isDeleted", false);
-        List<Order> resultSuccess = orderRepository.findAllByListings_SellerUsername_AndStatus(loggedin, OrderStatus.SUCCESS.name());
-        session.disableFilter("deletedProductFilter");
-
-        session = entityManager.unwrap(Session.class);
-        filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isDeleted", false);
-        List<Order> resultCancelled = orderRepository.findAllByListings_SellerUsername_AndStatus(loggedin, OrderStatus.CANCELLED.name());
-        session.disableFilter("deletedProductFilter");
+        List<Order> resultWaitingPayment = getListWithSellerUsernameStatus(loggedin, OrderStatus.WAITINGPAYMENT.name());
+        List<Order> resultFailed = getListWithSellerUsernameStatus(loggedin, OrderStatus.FAILED.name());
+        List<Order> resultSuccess = getListWithSellerUsernameStatus(loggedin, OrderStatus.SUCCESS.name());
+        List<Order> resultCancelled = getListWithSellerUsernameStatus(loggedin, OrderStatus.CANCELLED.name());
 
         List<Order> result = new ArrayList<>();
         Stream.of(resultCancelled, resultFailed, resultSuccess, resultWaitingPayment).forEach(result::addAll);
@@ -206,6 +188,15 @@ public class OrderServiceImpl implements OrderService{
                 orderRepository.save(newOrder);
             }
         }
+    }
+
+    private List<Order> getListWithSellerUsernameStatus(String sellerUsername, String orderStatus){
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", true);
+        List<Order> result = orderRepository.findAllByListings_SellerUsername_AndStatus(sellerUsername, orderStatus);
+        session.disableFilter("deletedProductFilter");
+        return result;
     }
 
     private boolean isUserBuyer(String role){
