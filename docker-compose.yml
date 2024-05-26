@@ -1,4 +1,4 @@
-name: AFK3
+name: afk3
 
 services:
   AFK3:
@@ -23,4 +23,4 @@ services:
       - "3000:3000"
     restart: unless-stopped
     volumes:
-      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/provisioning/datasources.yml:/etc/grafana/provisioning/datasources.yml
