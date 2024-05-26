@@ -248,7 +248,7 @@ public class ListingControllerTest {
     public void testGetAll() throws Exception{
         createAndSaveListing();
         when(listingService.findAll(token)).thenReturn(allListings);
-        MvcResult result = mvc.perform(get("/listing/get-all/")
+        MvcResult result = mvc.perform(get("/listing/get-all")
                         .header("Authorization", token))
                 .andExpect(status().isFound()).andReturn();
 
