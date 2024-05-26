@@ -75,7 +75,7 @@ public class ListingController {
         return new ResponseEntity<Listing>(foundListing, HttpStatus.FOUND);
     }
 
-    @GetMapping("/get-all/")
+    @GetMapping("/get-all")
     public ResponseEntity<List<Listing>> getAll(Model model, @RequestHeader("Authorization") String token) {
         List<Listing> foundListing = listingService.findAll(token);
         if (foundListing==null){
