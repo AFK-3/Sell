@@ -1,7 +1,7 @@
-name: afk3
+name: AFK3
 
 services:
-  afk3:
+  AFK3:
     image: ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG}
     container_name: sell
     ports:
